@@ -16,16 +16,28 @@ The SPARC Connectivity Knowledge Base of the Autonomic Nervous System (SCKAN) is
 
 Todo
 
+## Benefits
+
+Comparing neuronal pathways between humans and model organisms (Mice, Rats) can have numerous benefits for scientists studying neuroscience and related fields.
+
+Here are some of the key advantages:
+
+- gain valuable insights into the similarities and differences in brain organization and connectivity across species.
+- understand how findings from mouse/rat studies may translate to human brain function and behavior.
+- help validate the accuracy of these models and ensure that the neural circuits under investigation are relevant to the human condition.
 
 ## Video Demonstration
+
 Todo
 
 ## User Guide
 
 *  Tutorial
+
 Todo
 
 * Documentation
+7
 Todo
 
 ## Reporting Issues or Contributions
