@@ -2,8 +2,8 @@
 # SKCAN-Compare
 Tool to retrieve and visualize data contained in SCKAN (e.g., across species, relationship to spinal segments) to highlight similarities and differences in neuronal pathways
 
-![SKCAN-Compare](cover_photo.png)<p align="center">
-  <img src="cover_photo.png" width="50" alt="SKCAN-Compare">
+<p align="center">
+  <img src="cover_photo.png" width="200" alt="SKCAN-Compare">
 </p>
 
 ## Project Objective
