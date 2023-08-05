@@ -1,6 +1,6 @@
-
 # SKCAN-Compare
-Tool to retrieve and visualize data contained in SCKAN (e.g., across species, relationship to spinal segments) to highlight similarities and differences in neuronal pathways
+
+Tool to retrieve and visualize data contained in SCKAN (e.g., across species, relationship to spinal segments) to highlight similarities and differences in neuronal pathways.
 
 <p align="center">
   <img src="cover_photo.png" width="400" alt="SKCAN-Compare">
@@ -17,15 +17,15 @@ The SPARC Connectivity Knowledge Base of the Autonomic Nervous System (SCKAN) is
 Todo
 
 
-## Video Demo
+## Video Demonstration
 Todo
 
+## User Guide
 
-## Tutorials
+*  Tutorial
 Todo
 
-
-## Documentation
+* Documentation
 Todo
 
 ## Reporting Issues or Contributions
