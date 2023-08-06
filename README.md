@@ -8,7 +8,7 @@ Tool to retrieve and visualize data contained in SCKAN (e.g., across species, re
 
 ## Project Objective
 
-The SPARC Connectivity Knowledge Base of the Autonomic Nervous System (SCKAN) is a semantic store that houses a comprehensive knowledge base of autonomic nervous system (ANS) nerve-to-end organ connectivity. It is a key component of the SPARC Program and provides a central location to populate, discover, and query ANS connectivity knowledge at multiple scales. The information in SCKAN is derived from SPARC experts, SPARC data, literature, and textbooks
+The SPARC Connectivity Knowledge Base of the Autonomic Nervous System (SCKAN) is a semantic store that houses a comprehensive knowledge base of the autonomic nervous system (ANS) nerve-to-end organ connectivity. It is a key component of the SPARC Program and provides a central location to populate, discover, and query ANS connectivity knowledge at multiple scales. The information in SCKAN is derived from SPARC experts, SPARC data, literature, and textbooks
 
 * SCKAN Limitations
   
@@ -17,13 +17,10 @@ The SPARC Connectivity Knowledge Base of the Autonomic Nervous System (SCKAN) is
   AC map (https://sparc.science/maps?type=ac) provides interactive map visualization. However, It does not integrate all data available on  SCKAN.
 
 * Solution
-(objectives...)
 
-## Proposed Solution
+SKCAN-Compare is a tool to retrieve and visualize data contained in SCKAN to highlight similarities and differences in neuronal pathways.
 
-Todo
-
-## features
+It includes multiple features including:
 
   - Visualize neuronal pathways
     
@@ -46,7 +43,9 @@ Comparing neuronal pathways between humans and model organisms (Mice, Rats) can 
 Here are some of the key advantages:
 
 - gain valuable insights into the similarities and differences in brain organization and connectivity across species.
+  
 - understand how findings from mouse/rat studies may translate to human brain function and behavior.
+  
 - help validate the accuracy of these models and ensure that the neural circuits under investigation are relevant to the human condition.
 
 ## Usage 
@@ -55,7 +54,11 @@ Todo
 
 ### Video Demonstration
   
-## [Tool Name] vs existing tools
+## SKCAN-Compare vs existing tools
+
+The table provides a summary of the advantages of SKCAN-Compare over other existing tools, such as AC map and SPARClet.
+
+
 | Feature             | Tool            | AC map | SPARClet |
 |---------------------|-----------------|--------|----------|
 | Map                 | Yes             | Yes    | Yes      |
