@@ -22,6 +22,12 @@ Todo
     
   - Compare species
     
+  - Phenotypic Relation :
+          - Expresses a relation between a neuron population and its immediate effect on postsynaptic cells (Excitatory or Inhibitory);
+          - Expresses a relation between a neuron population and its circuit role phenotype (Intrinsic, Motor, Sensory, or Projection);
+          -  Expresses a relation between a neuron population and a brain region where the neuron population sends axons towards (Spinal cord descending projection, Spinal cord ascending projection);
+          - Expresses a relationship between a neuron type and a biological sex ( Male or Female from PATO)
+    
 ## Benefits
 
 Comparing neuronal pathways between humans and model organisms (Mice, Rats) can have numerous benefits for scientists studying neuroscience and related fields.
@@ -36,15 +42,17 @@ Here are some of the key advantages:
 
 Todo
 
+### Video Demonstration
+  
 ## [Tool Name] vs existing tools
-Tool vs AC map vs SPARClet
+| Feature             | Tool            | AC map | SPARClet |
+|---------------------|-----------------|--------|----------|
+| Map                 | Yes             | Yes    | Yes      |
+| Compare species     | Yes             | No     | No       |
+| Phenotypic Relation | Yes             | No     | No       |
 
 ## User Guide
-* Video Demonstration
-  
-*  Tutorial
-
-* Documentation
+Todo
 
 ## Citation
 
