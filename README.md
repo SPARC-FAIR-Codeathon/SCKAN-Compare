@@ -15,6 +15,18 @@ The SPARC Connectivity Knowledge Base of the Autonomic Nervous System (SCKAN) is
 ## Proposed Solution
 
 Todo
+## features
+
+Todo
+
+## Usage 
+
+Todo
+
+## Video Demonstration
+
+Todo
+
 
 ## Benefits
 
@@ -26,9 +38,6 @@ Here are some of the key advantages:
 - understand how findings from mouse/rat studies may translate to human brain function and behavior.
 - help validate the accuracy of these models and ensure that the neural circuits under investigation are relevant to the human condition.
 
-## Video Demonstration
-
-Todo
 
 ## User Guide
 
@@ -37,8 +46,14 @@ Todo
 Todo
 
 * Documentation
-7
+
 Todo
+
+## Citation
+
+Todo
+
+**Article : ** https://docs.google.com/document/d/1oP8g2e_n2P_O6TAGrjhWyUWIcVo9OeW4Auq1rH4TaDg/edit?usp=sharing
 
 ## Reporting Issues or Contributions
 To report an issue or suggest a new feature, please use the issues page. Please check existing issues before submitting a new one.
@@ -56,6 +71,5 @@ Todo
 (in alphabetical order)
 - [Gautam Kumar](https://github.com/gogu07)
 - [Hiba Ben Aribi](https://github.com/HibaBenAribi)
-- Lambert Nzungize (?)
 - [Pranjal Garg](https://github.com/Neurogarg/)
 - [Shailesh Appukuttan](https://github.com/appukuttan-shailesh/)
