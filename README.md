@@ -12,9 +12,7 @@ The SPARC Connectivity Knowledge Base of the Autonomic Nervous System (SCKAN) is
 
 * SCKAN Limitations
   
-  It includes a vast amount of data with no easy-to-use visualization tool.
-  
-  AC map (https://sparc.science/maps?type=ac) provides interactive map visualization. However, It does not integrate all data available on  SCKAN.
+Despite the invaluable wealth of data within SCKAN, its practical utility has been somewhat hindered by certain limitations. One of the major challenges faced by researchers is the absence of an easy-to-use visualization tool to represent the intricate neuronal pathways effectively. Existing tools like AC map (https://sparc.science/maps?type=ac) have provided interactive map visualization, but they fall short of integrating the complete data available within SCKAN, limiting their utility in comprehensive exploration.
 
 * Solution
 
