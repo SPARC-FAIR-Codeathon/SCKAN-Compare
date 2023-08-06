@@ -23,9 +23,13 @@ Todo
   - Compare species
     
   - Phenotypic Relation :
+    
           - Expresses a relation between a neuron population and its immediate effect on postsynaptic cells (Excitatory or Inhibitory);
+    
           - Expresses a relation between a neuron population and its circuit role phenotype (Intrinsic, Motor, Sensory, or Projection);
+    
           -  Expresses a relation between a neuron population and a brain region where the neuron population sends axons towards (Spinal cord descending projection, Spinal cord ascending projection);
+    
           - Expresses a relationship between a neuron type and a biological sex ( Male or Female from PATO)
     
 ## Benefits
