@@ -8,9 +8,16 @@ Tool to retrieve and visualize data contained in SCKAN (e.g., across species, re
 
 ## Project Objective
 
-The SPARC Connectivity Knowledge Base of the Autonomic Nervous System (SCKAN) is a semantic store modeling the topology of nerve-end organ connectivity and acts as a core component of powerful query and visualization capabilities within SPARC.
+The SPARC Connectivity Knowledge Base of the Autonomic Nervous System (SCKAN) is a semantic store that houses a comprehensive knowledge base of autonomic nervous system (ANS) nerve-to-end organ connectivity. It is a key component of the SPARC Program and provides a central location to populate, discover, and query ANS connectivity knowledge at multiple scales. The information in SCKAN is derived from SPARC experts, SPARC data, literature, and textbooks
 
-(add more here...)
+* SCKAN Limitations
+  
+  It includes a vast amount of data with no easy-to-use visualization tool.
+  
+  AC map (https://sparc.science/maps?type=ac) provides interactive map visualization. However, It does not integrate all data available on  SCKAN.
+
+* Solution
+(objectives...)
 
 ## Proposed Solution
 
