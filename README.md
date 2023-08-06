@@ -15,19 +15,13 @@ The SPARC Connectivity Knowledge Base of the Autonomic Nervous System (SCKAN) is
 ## Proposed Solution
 
 Todo
+
 ## features
 
-Todo
-
-## Usage 
-
-Todo
-
-## Video Demonstration
-
-Todo
-
-
+  - Visualize neuronal pathways
+    
+  - Compare species
+    
 ## Benefits
 
 Comparing neuronal pathways between humans and model organisms (Mice, Rats) can have numerous benefits for scientists studying neuroscience and related fields.
@@ -38,22 +32,25 @@ Here are some of the key advantages:
 - understand how findings from mouse/rat studies may translate to human brain function and behavior.
 - help validate the accuracy of these models and ensure that the neural circuits under investigation are relevant to the human condition.
 
+## Usage 
+
+Todo
+
+## [Tool Name] vs existing tools
+Tool vs AC map vs SPARClet
 
 ## User Guide
-
+* Video Demonstration
+  
 *  Tutorial
 
-Todo
-
 * Documentation
-
-Todo
 
 ## Citation
 
 Todo
 
-**Article : ** https://docs.google.com/document/d/1oP8g2e_n2P_O6TAGrjhWyUWIcVo9OeW4Auq1rH4TaDg/edit?usp=sharing
+Article :  https://docs.google.com/document/d/1oP8g2e_n2P_O6TAGrjhWyUWIcVo9OeW4Auq1rH4TaDg/edit?usp=sharing
 
 ## Reporting Issues or Contributions
 To report an issue or suggest a new feature, please use the issues page. Please check existing issues before submitting a new one.
