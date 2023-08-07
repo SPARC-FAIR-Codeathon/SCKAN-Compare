@@ -18,6 +18,7 @@ class Visualizer(object):
 
         self.fig.update_xaxes(showgrid=False, zeroline=False, visible=False, showticklabels=False)
         self.fig.update_yaxes(showgrid=False, zeroline=False, visible=False, showticklabels=False)
+        self.fig.update_layout(showlegend=False)
         # # self.fig.update_yaxes(
         # #     scaleanchor="x", scaleratio=1)
         self.fig.update_yaxes(range = [self.MAX_Y+3, 0])
