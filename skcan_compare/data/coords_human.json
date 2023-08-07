@@ -68,8 +68,8 @@
     {
         "URL": "http://purl.obolibrary.org/obo/UBERON_0002013",
         "Name": "superior hypogastric nerve plexus",
-        "X": "39",
-        "Y": "13"
+        "X": "37",
+        "Y": "16"
     },
     {
         "URL": "http://purl.obolibrary.org/obo/UBERON_0002014",
@@ -237,7 +237,7 @@
         "URL": "http://purl.obolibrary.org/obo/UBERON_0018681",
         "Name": "lesser splanchnic nerve",
         "X": "29",
-        "Y": "10"
+        "Y": "13"
     },
     {
         "URL": "http://uri.interlex.org/base/ilx_0793816",
