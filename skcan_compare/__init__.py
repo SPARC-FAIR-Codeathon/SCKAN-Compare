@@ -26,6 +26,7 @@ class SkcanCompare(object):
         self.endpoint = endpoint
         self.region_dict = {}
         self.vis = None
+        self.species = None
 
     def execute_query(self, query_string):
         # execute specified SPAQRL query and return result
@@ -50,8 +51,13 @@ class SkcanCompare(object):
     def init_vis(self, species=None):
         if species not in self.region_dict.keys():
             self.load_json_file(species=species)
-        if not self.vis:
+        if not self.vis or self.species!=species:
             self.vis = Visualizer(self.region_dict[species])
+            self.species = species
+        return self.vis
+    
+    def reset_vis(self):
+        self.vis = Visualizer(self.region_dict[self.species])
         return self.vis
 
     def add_connection(self, species=None, region_A=None, region_B=None, region_C=None, neuron=None):
