@@ -257,7 +257,7 @@ class SkcanCompare(object):
 
         if species_name:
             filtered_df = df_result[(df_result.Species == species_name)]
-            unique_regions_df = get_unique_regions(filtered_df)
+            unique_regions_df = self.get_unique_regions(filtered_df)
             # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
             replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
 
@@ -272,7 +272,7 @@ class SkcanCompare(object):
             return filtered_df
 
         else:
-            unique_regions_df = get_unique_regions(df_result)
+            unique_regions_df = self.get_unique_regions(df_result)
             # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
             replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
 
