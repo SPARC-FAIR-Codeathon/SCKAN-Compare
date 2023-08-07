@@ -9,6 +9,7 @@ License: Apache License 2.0
 import os
 import json
 import pkg_resources
+import numpy as np
 
 from . import globals
 from . import query
@@ -68,3 +69,10 @@ class SkcanCompare(object):
             vis.draw_edge_AB(region_A, region_B, neuron)
 
         return vis.get_figure()
+    
+    def get_unique_regions (self, df_result):
+        region_A = np.unique(df_result.loc[:,"Region_A"])
+        region_B = np.unique(df_result.loc[:,"Region_B"])
+        region_C = np.unique(df_result.loc[:,"Region_C"])
+        unique_regions = np.unique(np.concatenate((region_A, region_B, region_C)))
+        return unique_regions
