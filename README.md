@@ -1,9 +1,9 @@
-# SKCAN-Compare
+# sckan-Compare
 
 Tool to retrieve and visualize data contained in SCKAN (e.g., across species, relationship to spinal segments) to highlight similarities and differences in neuronal pathways.
 
 <p align="center">
-  <img src="cover_photo.png" width="400" alt="SKCAN-Compare">
+  <img src="cover_photo.png" width="400" alt="sckan-Compare">
 </p>
 
 ## Project Objective
@@ -16,7 +16,7 @@ Despite the invaluable wealth of data within SCKAN, its practical utility has be
 
 * Solution
 
-SKCAN-Compare is a tool to retrieve and visualize data contained in SCKAN to highlight similarities and differences in neuronal pathways.
+sckan-Compare is a tool to retrieve and visualize data contained in SCKAN to highlight similarities and differences in neuronal pathways.
 
 It includes multiple features including:
 
@@ -58,9 +58,9 @@ Todo
  
 Todo
  
-## SKCAN-Compare vs existing tools
+## sckan-Compare vs existing tools
 
-The table provides a summary of the advantages of SKCAN-Compare over other existing tools, such as AC map and SPARClet.
+The table provides a summary of the advantages of sckan-Compare over other existing tools, such as AC map and SPARClet.
 
 
 | Feature             | Tool            | AC map | SPARClet |

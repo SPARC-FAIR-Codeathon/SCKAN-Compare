@@ -30,7 +30,7 @@ output/
 
 # pycharm project files
 .idea
-/skcan_compare.egg-info
+/sckan_compare.egg-info
 
 # VisualStudio Code
 .vscode/

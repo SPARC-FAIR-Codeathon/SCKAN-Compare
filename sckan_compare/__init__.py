@@ -17,7 +17,7 @@ from . import query
 from .visualize import Visualizer
 
 
-class SkcanCompare(object):
+class sckanCompare(object):
     """
     Base class for accessing functionality
     """
@@ -35,7 +35,7 @@ class SkcanCompare(object):
 
 
     def load_json_file(self):
-        datapath = pkg_resources.resource_filename("skcan_compare", "data")
+        datapath = pkg_resources.resource_filename("sckan_compare", "data")
         if self.species == "Mus musculus":
             filepath = os.path.join(datapath, "coords_mouse.json")
         elif self.species == "Rattus norvegicus":

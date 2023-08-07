@@ -13,10 +13,10 @@ def package_files(directory):
             paths.append(os.path.join('..', path, filename))
     return paths
 
-json_files = package_files('skcan_compare/data')
+json_files = package_files('sckan_compare/data')
 
 setup(
-    name="skcan-compare",
+    name="sckan-compare",
     version="0.0.1",
     description="A package for retrieving and visualizing data contained in     SCKAN (e.g., across species, relationship to spinal segments) to highlight similarities and differences in neuronal pathways",
     author="Shailesh Appukuttan, Hiba Ben Aribi, Pranjal Garg, Gautam Kumar",

@@ -8,9 +8,9 @@ class SimpleVisualizer(object):
         self.SCALE = 150
         self.MAX_Y = 900
 
-        node_A = Image.open("/home/shailesh/gits/2023-team-4/skcan_compare/data/node_A.png")
-        node_B = Image.open("/home/shailesh/gits/2023-team-4/skcan_compare/data/node_B.png")
-        node_C = Image.open("/home/shailesh/gits/2023-team-4/skcan_compare/data/node_C.png")
+        node_A = Image.open("/home/shailesh/gits/2023-team-4/sckan_compare/data/node_A.png")
+        node_B = Image.open("/home/shailesh/gits/2023-team-4/sckan_compare/data/node_B.png")
+        node_C = Image.open("/home/shailesh/gits/2023-team-4/sckan_compare/data/node_C.png")
         self.icons = {
             "node_A": node_A,
             "node_B": node_B,
