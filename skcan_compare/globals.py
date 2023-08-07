@@ -1,0 +1,1 @@
+BLAZEGRAPH_ENDPOINT = "https://blazegraph.scicrunch.io/blazegraph/sparql"

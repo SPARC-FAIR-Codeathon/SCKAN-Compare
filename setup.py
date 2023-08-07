@@ -2,26 +2,15 @@
 Author: Shailesh Appukuttan
 Date: 07/08/2023
 """
-import os
 from setuptools import setup, find_packages
-
-def package_files(directory):
-    """function to load package data"""
-    paths = []
-    for (path, directories, filenames) in os.walk(directory):
-        for filename in filenames:
-            paths.append(os.path.join('..', path, filename))
-    return paths
-
-json_files = package_files('skcan_compare/data')
 
 setup(
     name="skcan-compare",
-    version="0.0.1",
+    version="0.0.3",
     description="A package for retrieving and visualizing data contained in     SCKAN (e.g., across species, relationship to spinal segments) to highlight similarities and differences in neuronal pathways",
     author="Shailesh Appukuttan, Hiba Ben Aribi, Pranjal Garg, Gautam Kumar",
     author_email="appukuttan.shailesh@gmail.com",
     license="Apache-2.0",
-    package_data={"": json_files},
+    package_data={'': ['data/*.json']},
     packages=find_packages(),
 )
