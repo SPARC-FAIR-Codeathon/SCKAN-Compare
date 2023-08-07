@@ -169,6 +169,29 @@ class Visualizer(object):
             name=region
         ))
 
+    def interpolate_coordinates(self, point1, point2, resolution=0.1):
+        """
+        Interpolate between two cartesian coordinates with a given resolution using NumPy.
+        
+        Parameters:
+            point1 (tuple): First cartesian coordinate (x1, y1).
+            point2 (tuple): Second cartesian coordinate (x2, y2).
+            resolution (float): Interpolation resolution.
+            
+        Returns:
+            tuple: Two lists of interpolated x and y coordinates.
+        """
+        x1, y1 = point1
+        x2, y2 = point2
+        
+        num_steps = int(1 / resolution)
+        t = np.linspace(0, 1, num_steps + 1)
+        
+        interpolated_x = x1 + (x2 - x1) * t
+        interpolated_y = y1 + (y2 - y1) * t
+        
+        return list(interpolated_x), list(interpolated_y)
+
     def draw_edge_AB(self,
                      region1,
                      region2,
@@ -192,14 +215,9 @@ class Visualizer(object):
         # ))
 
         # interpolate line for adding hover text on line (to display neuron name)
-        x = [x1+0.5, x2+0.5]
-        y = [y1+0.5, y2+0.5]
-        if x1 != x2:            
-            x_new = np.arange(x1+0.5, x2+0.5, 0.1 if x1<x2 else -0.1)
-            y_new = np.interp(x_new, x, y)
-        else:
-            y_new = np.arange(y1+0.5, y2+0.5, 0.1 if y1<y2 else -0.1)
-            x_new = np.interp(y_new, y, x)
+        p1 = (x1+0.5, y1+0.5)
+        p2 = (x2+0.5, y2+0.5)
+        x_new, y_new = self.interpolate_coordinates(p1, p2)
         self.fig.add_trace(go.Scatter(
             x=x_new,
             y=y_new,
@@ -240,15 +258,9 @@ class Visualizer(object):
 
         # interpolate line for adding hover text on line (to display neuron name)
         # first part of line: A to C
-        x = [x1+0.5, x3+0.5]
-        y = [y1+0.5, y3+0.5]
-        if x1 != x3:
-            x_new = np.arange(x1+0.5, x3+0.5, 0.1 if x1<x3 else -0.1)
-            y_new = np.interp(x_new, x, y)
-        else:
-            y_new = np.arange(y1+0.5, y3+0.5, 0.1 if y1<y3 else -0.1)
-            x_new = np.interp(y_new, y, x)
-        
+        p1 = (x1+0.5, y1+0.5)
+        p2 = (x3+0.5, y3+0.5)
+        x_new, y_new = self.interpolate_coordinates(p1, p2)
         self.fig.add_trace(go.Scatter(
             x=x_new,
             y=y_new,
@@ -263,14 +275,9 @@ class Visualizer(object):
         ))
 
         # second part of line: C to B
-        x = [x3+0.5, x2+0.5]
-        y = [y3+0.5, y2+0.5]
-        if x3 != x2:            
-            x_new = np.arange(x3+0.5, x2+0.5, 0.1 if x3<x2 else -0.1)
-            y_new = np.interp(x_new, x, y)
-        else:
-            y_new = np.arange(y3+0.5, y2+0.5, 0.1 if y3<y2 else -0.1)
-            x_new = np.interp(y_new, y, x)
+        p1 = (x3+0.5, y3+0.5)
+        p2 = (x2+0.5, y2+0.5)
+        x_new, y_new = self.interpolate_coordinates(p1, p2)
         self.fig.add_trace(go.Scatter(
             x=x_new,
             y=y_new,
