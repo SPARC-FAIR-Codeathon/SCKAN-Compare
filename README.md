@@ -83,7 +83,7 @@ You can offer to help with the further development of this project by making pul
 
 
 ## License
-Todo
+Apache License 2.0
 
 
 ## Team Members
