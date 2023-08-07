@@ -26,13 +26,9 @@ It includes multiple features including:
     
   - Phenotypic Relation :
     
-          - Expresses a relation between a neuron population and its immediate effect on postsynaptic cells (Excitatory or Inhibitory);
-    
-          - Expresses a relation between a neuron population and its circuit role phenotype (Intrinsic, Motor, Sensory, or Projection);
-    
-          - Expresses a relation between a neuron population and a brain region where the neuron population sends axons towards (Spinal cord descending projection, Spinal cord ascending projection);
-    
-          - Expresses a relationship between a neuron type and biological sex ( Male or Female from PATO)
+        - gain valuable insights into the similarities and differences in brain organization and connectivity across species;
+        - understand how findings from mouse/rat studies may translate to human brain function and behavior;
+        - help validate the accuracy of these models and ensure that the neural circuits under investigation are relevant to the human condition.
     
 ## Benefits
 

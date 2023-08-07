@@ -283,3 +283,72 @@ class sckanCompare(object):
             df_result = df_result.drop_duplicates()
 
             return df_result
+
+# visualising projections of neurons
+import dash
+import dash_cytoscape as cyto
+import dash_html_components as html
+
+def visualise_projection(result_df):
+    
+    # getting unique nodes
+    a = np.unique(result_df.loc[:,'Neuron_1_Label'])
+    b = np.unique(result_df.loc[:,'Neuron_2_Label'])
+    unique_nodes= np.unique(np.concatenate((a,b)))
+        
+    nodes = []
+    for node in unique_nodes:
+        nodes.append({"data": {"id": node, "label": node}})
+    
+    # construct connections between these nodes as required
+    edges = []
+    for i in range(len(result_df)):
+        item = {"data": {"source": result_df.iloc[i,0], "target": result_df.iloc[i,1]}}
+        edges.append(item)
+    
+    elements = nodes + edges
+
+    #defines styling for the plot
+    default_stylesheet = [
+    {
+        "selector": "node",
+        "style": {
+            "width": "mapData(size, 0, 100, 20, 60)",
+            "height": "mapData(size, 0, 100, 20, 60)",
+            "content": "data(label)",
+            "font-size": "10px",
+            "text-valign": "center",
+            "text-halign": "center",}
+    },
+        {
+            "selector": "edge",
+            "style": {
+             #'line-style': 'dashed',
+            'target-arrow-color': 'black',
+            'target-arrow-shape': 'vee',
+            'curve-style' : 'straight',}
+      }
+    ]
+
+
+    app = dash.Dash(__name__)
+    app.layout = html.Div([
+        cyto.Cytoscape(
+            id='cytoscape',
+            elements=elements,
+            stylesheet = default_stylesheet,
+            style={'width': '100%', 'height': '400px', 'background-image': 'url(./sample_bg.png)'},
+            layout={
+                # 'name': 'preset'
+                'name': 'cose'
+                # 'name': 'random'
+                #'name': 'circle'
+                # 'name': 'grid'
+            }
+            
+        )
+    ])
+    
+    
+    if __name__ == '__main__':
+        app.run_server(debug=True, port=8051)
