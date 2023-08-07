@@ -1,0 +1,782 @@
+﻿[
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0001880",
+        "Name": "bed nucleus of stria terminalis",
+        "X": "2",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0001894",
+        "Name": "diencephalon",
+        "X": "2",
+        "Y": "6"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0002883",
+        "Name": "central amygdaloid nucleus",
+        "X": "3",
+        "Y": "6"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0002430",
+        "Name": "lateral hypothalamic area",
+        "X": "4",
+        "Y": "6"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0001931",
+        "Name": "lateral preoptic nucleus",
+        "X": "4",
+        "Y": "6"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0007769",
+        "Name": "medial preoptic region",
+        "X": "4",
+        "Y": "6"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0002625",
+        "Name": "median preoptic nucleus",
+        "X": "4",
+        "Y": "6"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0007632",
+        "Name": "Barrington's nucleus",
+        "X": "5",
+        "Y": "6"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0001891",
+        "Name": "midbrain",
+        "X": "5",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0009050",
+        "Name": "nucleus of solitary tract",
+        "X": "5",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0005363",
+        "Name": "inferior vagus X ganglion",
+        "X": "6",
+        "Y": "8"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0001896",
+        "Name": "medulla oblongata",
+        "X": "8",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0001719",
+        "Name": "nucleus ambiguus",
+        "X": "8",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0002870",
+        "Name": "dorsal motor nucleus of vagus nerve",
+        "X": "8",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006469",
+        "Name": "C1 segment of cervical spinal cord",
+        "X": "10",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0011926",
+        "Name": "postganglionic sympathetic fiber",
+        "X": "10",
+        "Y": "7"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006489",
+        "Name": "C2 segment of cervical spinal cord",
+        "X": "11",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006488",
+        "Name": "C3 segment of cervical spinal cord",
+        "X": "12",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793816",
+        "Name": "Intermediolateral nucleus of twelfth thoracic segment",
+        "X": "12",
+        "Y": "3"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006490",
+        "Name": "C4 segment of cervical spinal cord",
+        "X": "13",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006491",
+        "Name": "C5 segment of cervical spinal cord",
+        "X": "14",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006492",
+        "Name": "C6 segment of cervical spinal cord",
+        "X": "15",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006493",
+        "Name": "C7 segment of cervical spinal cord",
+        "X": "16",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0001759",
+        "Name": "vagus nerve",
+        "X": "16",
+        "Y": "8"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006470",
+        "Name": "C8 segment of cervical spinal cord",
+        "X": "17",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006457",
+        "Name": "T1 segment of thoracic spinal cord",
+        "X": "18",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006458",
+        "Name": "T2 segment of thoracic spinal cord",
+        "X": "19",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793821",
+        "Name": "prevertebral sympathetic ganglion in abdominal aortic plexus",
+        "X": "19",
+        "Y": "8"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006459",
+        "Name": "T3 segment of thoracic spinal cord",
+        "X": "20",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0002370",
+        "Name": "thymus",
+        "X": "20",
+        "Y": "9"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793699",
+        "Name": "Intermediolateral nucleus of fourth thoracic segment",
+        "X": "21",
+        "Y": "3"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006452",
+        "Name": "T4 segment of thoracic spinal cord",
+        "X": "21",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0035772",
+        "Name": "aortic plexus",
+        "X": "22",
+        "Y": "9"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793700",
+        "Name": "Intermediolateral nucleus of fifth thoracic segment",
+        "X": "22",
+        "Y": "3"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006453",
+        "Name": "T5 segment of thoracic spinal cord",
+        "X": "22",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0018680",
+        "Name": "greater splanchnic nerve",
+        "X": "22",
+        "Y": "13"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793082",
+        "Name": "celiac ganglion- superior mesenteric ganglion complex",
+        "X": "22",
+        "Y": "14"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793701",
+        "Name": "Intermediolateral nucleus of sixth thoracic segment",
+        "X": "23",
+        "Y": "3"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006454",
+        "Name": "T6 segment of thoracic spinal cord",
+        "X": "23",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793811",
+        "Name": "Intermediolateral nucleus of seventh thoracic segment",
+        "X": "24",
+        "Y": "3"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006455",
+        "Name": "T7 segment of thoracic spinal cord",
+        "X": "24",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0005453",
+        "Name": "inferior mesenteric ganglion",
+        "X": "24",
+        "Y": "13"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0035770",
+        "Name": "inferior mesenteric nerve plexus",
+        "X": "24",
+        "Y": "13"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793812",
+        "Name": "Intermediolateral nucleus of eighth thoracic segment",
+        "X": "25",
+        "Y": "3"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006456",
+        "Name": "T8 segment of thoracic spinal cord",
+        "X": "25",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793813",
+        "Name": "Intermediolateral nucleus of ninth thoracic segment",
+        "X": "26",
+        "Y": "3"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006465",
+        "Name": "T9 segment of thoracic spinal cord",
+        "X": "26",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0002318",
+        "Name": "white matter of spinal cord",
+        "X": "26",
+        "Y": "2"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793814",
+        "Name": "Intermediolateral nucleus of tenth thoracic segment",
+        "X": "27",
+        "Y": "3"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006466",
+        "Name": "T10 segment of thoracic spinal cord",
+        "X": "27",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793815",
+        "Name": "Intermediolateral nucleus of eleventh thoracic segment",
+        "X": "28",
+        "Y": "3"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006467",
+        "Name": "T11 segment of thoracic spinal cord",
+        "X": "28",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0018681",
+        "Name": "lesser splanchnic nerve",
+        "X": "29",
+        "Y": "10"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006468",
+        "Name": "T12 segment of thoracic spinal cord",
+        "X": "29",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0787009",
+        "Name": "Twelfth thoracic ganglion",
+        "X": "29",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793817",
+        "Name": "Intermediolateral nucleus of thirteenth thoracic segment",
+        "X": "30",
+        "Y": "3"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0777086",
+        "Name": "T12 - T13 interganglionic segment of the sympathetic chain",
+        "X": "30",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0739295",
+        "Name": "Thirteenth thoracic ganglion",
+        "X": "30",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793357",
+        "Name": "Thirteenth thoracic spinal cord segment",
+        "X": "30",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793818",
+        "Name": "Intermediolateral nucleus of first lumbar segment",
+        "X": "31",
+        "Y": "3"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0777087",
+        "Name": "T13 - L1 interganglionic segment of the sympathetic chain",
+        "X": "31",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0785421",
+        "Name": "ventral root of the first lumbar spinal cord segment",
+        "X": "31",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0789862",
+        "Name": "First lumbar ganglion",
+        "X": "31",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0785825",
+        "Name": "gray communicating ramus of first lumbar nerve",
+        "X": "31",
+        "Y": "3"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0777088",
+        "Name": "L1 - L2 interganglionic segment",
+        "X": "31",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793220",
+        "Name": "white communicating ramus of first lumbar spinal nerve",
+        "X": "31",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793221",
+        "Name": "white communicating ramus of second lumbar spinal nerve",
+        "X": "31",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793882",
+        "Name": "Dorsal gray commissure of first lumbar segment",
+        "X": "31",
+        "Y": "3"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0002857",
+        "Name": "first lumbar dorsal root ganglion",
+        "X": "31",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006448",
+        "Name": "L1 segment of lumbar spinal cord",
+        "X": "31",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793819",
+        "Name": "Intermediolateral nucleus of second lumbar segment",
+        "X": "32",
+        "Y": "3"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0788675",
+        "Name": "ventral root of the second lumbar spinal cord segment",
+        "X": "32",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0785733",
+        "Name": "gray communicating ramus of second lumbar nerve",
+        "X": "32",
+        "Y": "3"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0777089",
+        "Name": "L2 - L3 interganglionic segment",
+        "X": "32",
+        "Y": "6"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0002856",
+        "Name": "second lumbar dorsal root ganglion",
+        "X": "32",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0786933",
+        "Name": "Second lumbar ganglion",
+        "X": "32",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793883",
+        "Name": "Dorsal gray commissure of second lumbar segment",
+        "X": "32",
+        "Y": "3"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006450",
+        "Name": "L2 segment of lumbar spinal cord",
+        "X": "32",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0788315",
+        "Name": "Third lumbar ganglion",
+        "X": "33",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0777090",
+        "Name": "L3 - L4 interganglionic segment",
+        "X": "33",
+        "Y": "6"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006449",
+        "Name": "L3 segment of lumbar spinal cord",
+        "X": "33",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0790472",
+        "Name": "Fourth lumbar ganglion",
+        "X": "34",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0777091",
+        "Name": "L4 - L5 interganglionic segment",
+        "X": "34",
+        "Y": "6"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006451",
+        "Name": "L4 segment of lumbar spinal cord",
+        "X": "34",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0000992",
+        "Name": "ovary",
+        "X": "35",
+        "Y": "17"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0011929",
+        "Name": "postganglionic parasympathetic fiber",
+        "X": "35",
+        "Y": "7"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0791148",
+        "Name": "ventral root of the fifth lumbar spinal cord segment",
+        "X": "35",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0777092",
+        "Name": "L5 - L6 interganglionic segment",
+        "X": "35",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0739296",
+        "Name": "fifth lumbar sympathetic ganglion",
+        "X": "35",
+        "Y": "6"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006447",
+        "Name": "L5 segment of lumbar spinal cord",
+        "X": "35",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793877",
+        "Name": "Intermediolateral nucleus of sixth lumbar segment",
+        "X": "36",
+        "Y": "3"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793615",
+        "Name": "ventral root of the sixth lumbar spinal cord segment",
+        "X": "36",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0739299",
+        "Name": "gray communicating ramus of sixth lumbar nerve",
+        "X": "36",
+        "Y": "3"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0777093",
+        "Name": "L6 - S1 interganglionic segment of the sympathetic chain",
+        "X": "36",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793360",
+        "Name": "sixth lumbar dorsal root ganglion",
+        "X": "36",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0738432",
+        "Name": "Sixth lumbar spinal cord segment",
+        "X": "36",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0739297",
+        "Name": "sixth lumbar sympathetic ganglion",
+        "X": "36",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793804",
+        "Name": "L6 parasympathetic nucleus",
+        "X": "36",
+        "Y": "3"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0005303",
+        "Name": "hypogastric nerve",
+        "X": "37",
+        "Y": "16"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793878",
+        "Name": "Intermediolateral nucleus of first sacral segment",
+        "X": "37",
+        "Y": "3"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0004665",
+        "Name": "muscular coat of seminal vesicle",
+        "X": "37",
+        "Y": "17"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0000428",
+        "Name": "prostate epithelium",
+        "X": "37",
+        "Y": "18"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0004243",
+        "Name": "prostate gland smooth muscle",
+        "X": "37",
+        "Y": "18"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0004805",
+        "Name": "seminal vesicle epithelium",
+        "X": "37",
+        "Y": "17"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0792853",
+        "Name": "ventral root of the first sacral spinal cord segment",
+        "X": "37",
+        "Y": "5"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0002860",
+        "Name": "first sacral dorsal root ganglion",
+        "X": "37",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0789109",
+        "Name": "First sacral ganglion",
+        "X": "37",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793228",
+        "Name": "gray communicating ramus of first sacral nerve",
+        "X": "37",
+        "Y": "3"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0006460",
+        "Name": "S1 segment",
+        "X": "37",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793805",
+        "Name": "S1 sacral parasympathetic nucleus",
+        "X": "37",
+        "Y": "3"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0002366",
+        "Name": "bulbo-urethral gland",
+        "X": "39",
+        "Y": "18"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793822",
+        "Name": "Superior ovarian nerve",
+        "X": "39",
+        "Y": "16"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793834",
+        "Name": "accessory pelvic ganglion",
+        "X": "40",
+        "Y": "16"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793664",
+        "Name": "Arteriole in connective tissue of bladder dome",
+        "X": "40",
+        "Y": "12"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793663",
+        "Name": "Arteriole in connective tissue of bladder neck",
+        "X": "40",
+        "Y": "12"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793559",
+        "Name": "bladder nerve",
+        "X": "40",
+        "Y": "10"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0004713",
+        "Name": "corpus cavernosum penis",
+        "X": "40",
+        "Y": "18"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0011183",
+        "Name": "corpus spongiosum of penis",
+        "X": "40",
+        "Y": "18"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0738433",
+        "Name": "Dome of the Bladder",
+        "X": "40",
+        "Y": "12"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0018683",
+        "Name": "lumbar splanchnic nerve",
+        "X": "40",
+        "Y": "16"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793823",
+        "Name": "major pelvic ganglion",
+        "X": "40",
+        "Y": "16"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0001258",
+        "Name": "neck of urinary bladder",
+        "X": "40",
+        "Y": "12"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793832",
+        "Name": "ovarian nerve plexus",
+        "X": "40",
+        "Y": "16"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0016508",
+        "Name": "pelvic ganglion",
+        "X": "40",
+        "Y": "16"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0018675",
+        "Name": "pelvic splanchnic nerve",
+        "X": "40",
+        "Y": "16"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793807",
+        "Name": "Penile cavernous nerve",
+        "X": "40",
+        "Y": "16"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0011390",
+        "Name": "pudendal nerve",
+        "X": "40",
+        "Y": "16"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793141",
+        "Name": "urethral rhabdosphincter",
+        "X": "40",
+        "Y": "17"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793884",
+        "Name": "first accessory pelvic ganglion",
+        "X": "40",
+        "Y": "16"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793833",
+        "Name": "ovarian nerve plexus parasympathetic ganglion",
+        "X": "40",
+        "Y": "16"
+    }
+]

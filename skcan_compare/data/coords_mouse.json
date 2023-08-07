@@ -1,0 +1,164 @@
+﻿[
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0738444",
+        "Name": "interscapular brown adipose tissue",
+        "X": "13",
+        "Y": "6"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0002441",
+        "Name": "cervicothoracic ganglion",
+        "X": "17",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0790497",
+        "Name": "Gray communicating ramus of cervicothoracic ganglion to first thoracic spinal nerve",
+        "X": "17",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0739303",
+        "Name": "gray communicating ramus of second thoracic nerve",
+        "X": "19",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0786228",
+        "Name": "Second thoracic ganglion",
+        "X": "19",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793208",
+        "Name": "white communicating ramus of second thoracic spinal nerve",
+        "X": "19",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793617",
+        "Name": "T2 sympathetic chain",
+        "X": "19",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793697",
+        "Name": "Intermediolateral nucleus of second thoracic segment",
+        "X": "19",
+        "Y": "3"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0739304",
+        "Name": "gray communicating ramus of third thoracic nerve",
+        "X": "20",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0786722",
+        "Name": "Third thoracic ganglion",
+        "X": "20",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793209",
+        "Name": "white communicating ramus of third thoracic spinal nerve",
+        "X": "20",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793618",
+        "Name": "T3 sympathetic chain",
+        "X": "20",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793698",
+        "Name": "Intermediolateral nucleus of third thoracic segment",
+        "X": "20",
+        "Y": "3"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0786272",
+        "Name": "Fourth thoracic ganglion",
+        "X": "21",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0788945",
+        "Name": "gray communicating ramus of the fourth thoracic nerve",
+        "X": "21",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793210",
+        "Name": "white communicating ramus of fourth thoracic spinal nerve",
+        "X": "21",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793619",
+        "Name": "T4 sympathetic chain",
+        "X": "21",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793699",
+        "Name": "Intermediolateral nucleus of fourth thoracic segment",
+        "X": "21",
+        "Y": "3"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0784439",
+        "Name": "gray communicating ramus of the fifth thoracic nerve",
+        "X": "22",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0786141",
+        "Name": "Fifth thoracic ganglion",
+        "X": "22",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793211",
+        "Name": "white communicating ramus of fifth thoracic spinal nerve",
+        "X": "22",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793335",
+        "Name": "T5 sympathetic chain",
+        "X": "22",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793700",
+        "Name": "Intermediolateral nucleus of fifth thoracic segment",
+        "X": "22",
+        "Y": "3"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793212",
+        "Name": "white communicating ramus of sixth thoracic spinal nerve",
+        "X": "23",
+        "Y": "5"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793336",
+        "Name": "T6 sympathetic chain",
+        "X": "23",
+        "Y": "6"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793701",
+        "Name": "Intermediolateral nucleus of sixth thoracic segment",
+        "X": "23",
+        "Y": "3"
+    },
+    {
+        "URL": "http://purl.obolibrary.org/obo/UBERON_0001780",
+        "Name": "spinal nerve",
+        "X": "24",
+        "Y": "2"
+    }
+]

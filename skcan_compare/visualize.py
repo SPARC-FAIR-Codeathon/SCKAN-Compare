@@ -3,8 +3,9 @@ import plotly.graph_objects as go
 
 class Visualizer(object):
 
-    def __init__(self, region_dict):
+    def __init__(self, region_dict, species):
         self.region_dict = region_dict
+        self.species = species
 
         self.SCALE = 50
         self.MAX_X = 43
@@ -23,7 +24,12 @@ class Visualizer(object):
         self.fig.update_xaxes(range = [0, self.MAX_X])
         self.fig.update_layout(height=int(500))
 
-        self.draw_background()
+        if (self.species == "Mus musculus") or (self.species == "Rattus norvegicus"):
+            self.draw_background_mouse_rat()
+        else:
+            # default
+            self.draw_background_human()
+
 
     def draw_rect(self,
                 start_x,
@@ -65,7 +71,7 @@ class Visualizer(object):
             showlegend=False
         ))
 
-    def draw_background(self):
+    def draw_background_human(self):
         self.draw_rect(1, 3, 4, 4, "#4051BF", "#C5CAE9")
         self.draw_rect(5, 3, 1, 4, "#4051BF", "#C5CAE9")
         self.draw_rect(6, 5, 2, 1, "#4051BF", "#C5CAE9")
@@ -97,6 +103,44 @@ class Visualizer(object):
         self.draw_rect(37, 16, 1, 1, "#4051BF", "#C5CAE9")
         self.draw_rect(40, 16, 1, 1, "#4051BF", "#C5CAE9")
         self.draw_rect(35, 17, 6, 2, "#4051BF", "#C5CAE9")
+
+    def draw_background_mouse_rat(self):
+        self.draw_rect(24, 2, 1, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(26, 2, 1, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(1, 3, 4, 4, "#4051BF", "#C5CAE9")
+        self.draw_rect(5, 3, 1, 4, "#4051BF", "#C5CAE9")
+        self.draw_rect(6, 5, 2, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(7, 4, 2, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(8, 5, 2, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(10, 3, 8, 2, "#4051BF", "#C5CAE9")
+        self.draw_rect(18, 3, 13, 2, "#4051BF", "#C5CAE9")
+        self.draw_rect(31, 3, 6, 2, "#4051BF", "#C5CAE9")
+        self.draw_rect(37, 3, 4, 2, "#4051BF", "#C5CAE9")
+        self.draw_rect(41, 3, 1, 2, "#4051BF", "#C5CAE9")
+        self.draw_rect(10, 5, 31, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(10, 6, 1, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(13, 6, 1, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(17, 6, 1, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(18, 6, 23, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(10, 7, 3, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(35, 7, 3, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(6, 8, 2, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(15, 8, 2, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(19, 8, 1, 1, "#4051BF", "#C5CAE9")
+        self.draw_poly([6,8,8,7,7,6,6], [9,9,11,11,10,10,9], "#4051BF", "#C5CAE9")
+        self.draw_rect(18, 9, 3, 2, "#4051BF", "#C5CAE9")
+        self.draw_rect(21, 9, 2, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(29, 10, 1, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(40, 10, 1, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(18, 11, 10, 2, "#4051BF", "#C5CAE9")
+        self.draw_rect(29, 11, 12, 2, "#4051BF", "#C5CAE9")
+        self.draw_rect(22, 13, 1, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(24, 13, 1, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(18, 14, 23, 2, "#4051BF", "#C5CAE9")
+        self.draw_rect(37, 16, 1, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(40, 16, 1, 1, "#4051BF", "#C5CAE9")
+        self.draw_rect(35, 17, 6, 2, "#4051BF", "#C5CAE9")
+
 
     def mark_node(self,
                   region,

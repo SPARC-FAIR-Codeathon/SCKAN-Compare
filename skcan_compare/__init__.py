@@ -52,7 +52,7 @@ class SkcanCompare(object):
         if species not in self.region_dict.keys():
             self.load_json_file(species=species)
         if not self.vis or self.species!=species:
-            self.vis = Visualizer(self.region_dict[species])
+            self.vis = Visualizer(self.region_dict[species], species)
             self.species = species
         return self.vis
     
