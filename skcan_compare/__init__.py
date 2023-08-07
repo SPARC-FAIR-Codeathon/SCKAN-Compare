@@ -10,6 +10,7 @@ import os
 import json
 import pkg_resources
 import numpy as np
+import pandas as pd
 
 from . import globals
 from . import query
@@ -70,9 +71,211 @@ class SkcanCompare(object):
 
         return vis.get_figure()
     
-    def get_unique_regions (self, df_result):
-        region_A = np.unique(df_result.loc[:,"Region_A"])
-        region_B = np.unique(df_result.loc[:,"Region_B"])
-        region_C = np.unique(df_result.loc[:,"Region_C"])
+
+    def get_unique_region_IRI(self, df_result):
+        """
+        :param df_result: dataframe
+        :return: unique regions in form of hyperlinks
+        """
+        region_A = np.unique(df_result.loc[:,"A"])
+        region_B = np.unique(df_result.loc[:,"B"])
+        region_C = np.unique(df_result.loc[:,"C"])
         unique_regions = np.unique(np.concatenate((region_A, region_B, region_C)))
         return unique_regions
+
+    
+    def get_unique_regions (self, df_result):
+        """
+        :param df_result: dataframe
+        :return: region labels
+        """
+        unique_regions = self.get_unique_region_IRI(df_result)
+        test_template = """
+        PREFIX owl: <http://www.w3.org/2002/07/owl#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX partOf: <http://purl.obolibrary.org/obo/BFO_0000050>
+        PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
+
+        SELECT DISTINCT ?annotation ?label 
+        WHERE {{
+            ?annotation rdfs:label ?label. 
+
+            FILTER (?annotation IN ({}))
+        }}
+        ORDER BY ?annotation ?label 
+        """
+
+        # first 100
+        formatted_links = " ,".join(["<{}>".format(link) for link in unique_regions[:100]])
+        test_query = test_template.format(formatted_links)
+        result = self.execute_query(test_query)
+        final_df = pd.DataFrame(result).loc[1:, :]
+
+        # rest 100
+        formatted_links = " ,".join(["<{}>".format(link) for link in unique_regions[100:200]])
+        test_query = test_template.format(formatted_links)
+        result = self.execute_query(test_query)
+        final_df = pd.concat([final_df, pd.DataFrame(result).loc[1:, :]], ignore_index=True)
+
+        # rest all
+        formatted_links = " ,".join(["<{}>".format(link) for link in unique_regions[200:]])
+        test_query = test_template.format(formatted_links)
+        result = self.execute_query(test_query)
+        final_df = pd.concat([final_df, pd.DataFrame(result).loc[1:, :]], ignore_index=True)
+
+        final_df.drop_duplicates(subset=0, keep='first', inplace=True)
+        return final_df
+    
+    # getting dataframe from queries
+    def get_neuron_dataframe(self, result, species_name=None, phenotype_name=None):
+        """
+        :param result: from queries
+        :param species_name: takes only subset for circuit_role (check get_circuit_roles), all from get_species_name
+        :param phenotype_name: from get_phenotype_neuron or from get_circuit_roles
+        :return:
+        """
+
+        df_result = pd.DataFrame(result)
+        # get column names right
+        df_result.columns = df_result.loc[0, :].to_list()
+        df_result = df_result.loc[1:, :]
+
+        # replace duplicate instances of species name
+        df_result = df_result.replace('Mammalia', 'Mammal')
+        df_result = df_result.replace('mammals', 'Mammal')
+        df_result = df_result.replace('Vertebrata <vertebrates>', 'Vertebrata')
+        df_result = df_result.replace('vertebrates', 'Vertebrata')
+        df_result = df_result.replace('human', 'Homo sapiens')
+        df_result = df_result.replace('Norway rat', 'Rattus norvegicus')
+        df_result = df_result.replace('brown rat', 'Rattus norvegicus')
+        df_result = df_result.replace('rat', 'Rattus norvegicus')
+        df_result = df_result.replace('rats', 'Rattus norvegicus')
+        df_result = df_result.replace('mouse', 'Mus musculus')
+        df_result = df_result.replace('house mouse', 'Mus musculus')
+
+        if phenotype_name:
+
+            if species_name:
+                filtered_df = df_result[(df_result.Species == species_name)]
+                unique_regions_df = self.get_unique_regions(filtered_df)
+                # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
+                replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
+
+                # # Use the map function to replace the values in DataFrame 1
+                filtered_df.loc[:, "Region_A"] = filtered_df.A.map(replacement_dict)
+                filtered_df.loc[:, "Region_B"] = filtered_df.B.map(replacement_dict)
+                filtered_df.loc[:, "Region_C"] = filtered_df.C.map(replacement_dict)
+
+                # remove duplicate
+                filtered_df = filtered_df.drop_duplicates()
+                filtered_df = filtered_df[(filtered_df.phenotype == phenotype_name)]
+
+                return filtered_df
+
+            else:
+                unique_regions_df = self.get_unique_regions(df_result)
+                # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
+                replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
+
+                # # Use the map function to replace the values in DataFrame 1
+                df_result.loc[:, "Region_A"] = df_result.A.map(replacement_dict)
+                df_result.loc[:, "Region_B"] = df_result.B.map(replacement_dict)
+                df_result.loc[:, "Region_C"] = df_result.C.map(replacement_dict)
+
+                # remove duplicate
+                df_result = df_result.drop_duplicates()
+                df_result = df_result[(df_result.phenotype == phenotype_name)]
+
+                return df_result
+
+        else:
+
+            if species_name:
+                filtered_df = df_result[(df_result.Species == species_name)]
+                unique_regions_df = self.get_unique_regions(filtered_df)
+                # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
+                replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
+
+                # # Use the map function to replace the values in DataFrame 1
+                filtered_df.loc[:, "Region_A"] = filtered_df.A.map(replacement_dict)
+                filtered_df.loc[:, "Region_B"] = filtered_df.B.map(replacement_dict)
+                filtered_df.loc[:, "Region_C"] = filtered_df.C.map(replacement_dict)
+
+                # remove duplicate
+                filtered_df = filtered_df.drop_duplicates()
+
+                return filtered_df
+
+            else:
+                unique_regions_df = self.get_unique_regions(df_result)
+                # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
+                replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
+
+                # # Use the map function to replace the values in DataFrame 1
+                df_result.loc[:, "Region_A"] = df_result.A.map(replacement_dict)
+                df_result.loc[:, "Region_B"] = df_result.B.map(replacement_dict)
+                df_result.loc[:, "Region_C"] = df_result.C.map(replacement_dict)
+
+                # remove duplicate
+                df_result = df_result.drop_duplicates()
+
+                return df_result
+
+    def projection_fibres_dataframe(self, result, species_name=None):
+        """
+
+            :param result: from queries
+            :param species_name: takes only subset for circuit_role (check get_circuit_roles), all from get_species_name
+            :param phenotype_name: from get_phenotype_neuron or from get_circuit_roles
+            :return:
+            """
+
+        df_result = pd.DataFrame(result)
+        # get column names right
+        df_result.columns = df_result.loc[0, :].to_list()
+        df_result = df_result.loc[1:, :]
+
+        # replace duplicate instances of species name
+        df_result = df_result.replace('Mammalia', 'Mammal')
+        df_result = df_result.replace('mammals', 'Mammal')
+        df_result = df_result.replace('Vertebrata <vertebrates>', 'Vertebrata')
+        df_result = df_result.replace('vertebrates', 'Vertebrata')
+        df_result = df_result.replace('human', 'Homo sapiens')
+        df_result = df_result.replace('Norway rat', 'Rattus norvegicus')
+        df_result = df_result.replace('brown rat', 'Rattus norvegicus')
+        df_result = df_result.replace('rat', 'Rattus norvegicus')
+        df_result = df_result.replace('rats', 'Rattus norvegicus')
+        df_result = df_result.replace('mouse', 'Mus musculus')
+        df_result = df_result.replace('house mouse', 'Mus musculus')
+
+        if species_name:
+            filtered_df = df_result[(df_result.Species == species_name)]
+            unique_regions_df = get_unique_regions(filtered_df)
+            # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
+            replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
+
+            # # Use the map function to replace the values in DataFrame 1
+            filtered_df.loc[:, "Region_A"] = filtered_df.A.map(replacement_dict)
+            filtered_df.loc[:, "Region_B"] = filtered_df.B.map(replacement_dict)
+            filtered_df.loc[:, "Region_C"] = filtered_df.C.map(replacement_dict)
+
+            # remove duplicate
+            filtered_df = filtered_df.drop_duplicates()
+
+            return filtered_df
+
+        else:
+            unique_regions_df = get_unique_regions(df_result)
+            # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
+            replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
+
+            # # Use the map function to replace the values in DataFrame 1
+            df_result.loc[:, "Region_A"] = df_result.A.map(replacement_dict)
+            df_result.loc[:, "Region_B"] = df_result.B.map(replacement_dict)
+            df_result.loc[:, "Region_C"] = df_result.C.map(replacement_dict)
+
+            # remove duplicate
+            df_result = df_result.drop_duplicates()
+
+            return df_result
