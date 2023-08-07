@@ -170,7 +170,7 @@ class Visualizer(object):
             name=region
         ))
 
-    def interpolate_coordinates(self, point1, point2, resolution=0.5):
+    def interpolate_coordinates(self, point1, point2, resolution=0.1):
         """
         Interpolate between two cartesian coordinates with a given resolution using NumPy.
         
