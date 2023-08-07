@@ -54,6 +54,10 @@ Todo
 
  Todo 
  
+ ## User Guide
+ 
+Todo
+ 
 ## SKCAN-Compare vs existing tools
 
 The table provides a summary of the advantages of SKCAN-Compare over other existing tools, such as AC map and SPARClet.
@@ -65,8 +69,6 @@ The table provides a summary of the advantages of SKCAN-Compare over other exist
 | Compare species     | Yes             | No     | No       |
 | Phenotypic Relation | Yes             | No     | No       |
 
-## User Guide
-Todo
 
 ## Citation
 
