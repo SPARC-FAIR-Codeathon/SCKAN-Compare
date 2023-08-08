@@ -17,7 +17,7 @@ from . import query
 from .visualize import Visualizer
 
 
-class sckanCompare(object):
+class SckanCompare(object):
     """
     Base class for accessing functionality
     """
