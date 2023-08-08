@@ -46,29 +46,7 @@ Here are some of the key advantages:
   
 - help validate the accuracy of these models and ensure that the neural circuits under investigation are relevant to the human condition.
 
-## Installation
 
-SCKAN-Compare is included in the PyPI package index. You can therefore install it with the pip utility:
-
-```
-pip install sckan-compare
-```
-
-For more detailed instructions, please check the [documentation](https://sckan-compare.readthedocs.io/en/latest/installation.html)
-
-### Video Demonstration
-
-You can get a quick overview of the tool via the following video:
-
- Todo : << ADD YOUTUBE LINK >>
- 
-## Documentation
- 
-Documentation for SCKAN-Compare can be accessed at:
-https://sckan-compare.readthedocs.io/
-
-It provides a more detailed insight into the methodology and approach adopted. Instructions for installation are also provided.
- 
 ## SCKAN-Compare vs existing tools
 
 The table provides a summary of the advantages of SCKAN-Compare over other existing tools, such as AC map and SPARClet.
@@ -80,6 +58,42 @@ The table provides a summary of the advantages of SCKAN-Compare over other exist
 | Compare species     | Yes             | No     | No       |
 | Phenotypic Relation | Yes             | No     | No       |
 
+
+
+## Installation
+
+SCKAN-Compare is included in the PyPI package index. You can therefore install it with the pip utility:
+
+```
+pip install sckan-compare
+```
+
+For more detailed instructions, please check the [documentation](https://sckan-compare.readthedocs.io/en/latest/installation.html)
+
+
+## Documentation
+ 
+Documentation for SCKAN-Compare can be accessed at:
+https://sckan-compare.readthedocs.io/
+
+It provides a more detailed insight into the methodology and approach adopted. Instructions for installation are also provided.
+
+
+## Video Demonstration
+
+You can get a quick overview of the tool via the following video:
+
+ Todo : << ADD YOUTUBE LINK >>
+
+
+## Tutorials - Jupyter Notebooks
+
+We have provided a set of Jupyter notebooks that serve as tutorials.
+They highlight the functionality available via SCKAN-Compare.
+
+- [[Demo #1](tutorials/demo1.ipynb)]
+- [[Demo #2](tutorials/demo1.ipynb)]
+- [[Demo #3](tutorials/demo1.ipynb)]
 
 ## Citation
 
