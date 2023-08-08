@@ -1,8 +1,19 @@
 ==============
+Release 0.0.4
+==============
+
+Update human Map
+Update human region coordinates
+Mouse, rat data included
+Simple visualizer implemented
+
+
+==============
 Release 0.0.3
 ==============
 
 JSON package data included
+Big visualizer implemented
 
 
 ==============
@@ -10,7 +21,7 @@ Release 0.0.2
 ==============
 
 First prototype
-
+Human data and coordinates added
 
 ==============
 Release 0.0.1
