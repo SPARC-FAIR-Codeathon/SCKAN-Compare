@@ -78,22 +78,14 @@ https://sckan-compare.readthedocs.io/
 
 It provides a more detailed insight into the methodology and approach adopted. Instructions for installation are also provided.
 
-
-## Video Demonstration
-
-You can get a quick overview of the tool via the following video:
-
- Todo : << ADD YOUTUBE LINK >>
-
-
 ## Tutorials - Jupyter Notebooks
 
 We have provided a set of Jupyter notebooks that serve as tutorials.
 They highlight the functionality available via SCKAN-Compare.
 
-- [[Demo #1](tutorials/demo1.ipynb)]
-- [[Demo #2](tutorials/demo1.ipynb)]
-- [[Demo #3](tutorials/demo1.ipynb)]
+- [Demo #1](tutorials/demo1.ipynb)
+- [Demo #2](tutorials/demo1.ipynb)
+- [Demo #3](tutorials/demo1.ipynb)
 
 ## Citation
 
