@@ -1,3 +1,5 @@
+import os
+import pkg_resources
 import numpy as np
 import plotly.graph_objects as go
 from PIL import Image
@@ -8,9 +10,10 @@ class SimpleVisualizer(object):
         self.SCALE = 150
         self.MAX_Y = 900
 
-        node_A = Image.open("/home/shailesh/gits/2023-team-4/sckan_compare/data/node_A.png")
-        node_B = Image.open("/home/shailesh/gits/2023-team-4/sckan_compare/data/node_B.png")
-        node_C = Image.open("/home/shailesh/gits/2023-team-4/sckan_compare/data/node_C.png")
+        datapath = pkg_resources.resource_filename("sckan_compare", "data")
+        node_A = Image.open(os.path.join(datapath, "node_A.png"))
+        node_B = Image.open(os.path.join(datapath, "node_B.png"))
+        node_C = Image.open(os.path.join(datapath, "node_C.png"))
         self.icons = {
             "node_A": node_A,
             "node_B": node_B,
