@@ -4,7 +4,7 @@ The web app was developed using the shiny package and has an interactive user in
 ## Tab1:Tabular result
 
 <p align="center">
-  <img src="./resources/app_figure_1.png" width="600" alt=" ">
+  <img src="https://github.com/SPARC-FAIR-Codeathon/2023-team-4/tree/main/resources/app_figure_1.png" width="600" alt=" ">
 </p>
 
 <p align="center">
