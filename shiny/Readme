@@ -4,29 +4,29 @@ The web app was developed using the shiny package and has an interactive user in
 ## Tab1:Tabular result
 
 <p align="center">
-  <img src="./resources/app_figure_1.png" width="300" alt="SCKAN-Compare">
+  <img src="./resources/app_figure_1.png" width="300" alt=" ">
 </p>
 
 <p align="center">
-  <img src="resources/app_figure_2.png" width="300" alt="SCKAN-Compare">
+  <img src="./resources/app_figure_2.png" width="300" alt="SCKAN-Compare">
 </p>
 
 ## Tab2 : anatomy map
 
 <p align="center">
-  <img src="resources/app_figure_3.png" width="300" alt="SCKAN-Compare">
+  <img src="./resources/app_figure_3.png" width="300" alt="SCKAN-Compare">
 </p>
 
 <p align="center">
-  <img src="resources/app_figure_4.png" width="300" alt="SCKAN-Compare">
+  <img src="./resources/app_figure_4.png" width="300" alt="SCKAN-Compare">
 </p>
 
 ## tab3 simple graph
 
 <p align="center">
-  <img src="resources/app_figure_5.png" width="300" alt="SCKAN-Compare">
+  <img src="./resources/app_figure_5.png" width="300" alt="SCKAN-Compare">
 </p>
 
 <p align="center">
-  <img src="resources/app_figure_6.png" width="300" alt="SCKAN-Compare">
+  <img src=".*resources/app_figure_6.png" width="300" alt="SCKAN-Compare">
 </p>
