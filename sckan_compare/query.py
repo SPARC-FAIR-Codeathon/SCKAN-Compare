@@ -29,7 +29,7 @@ PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
 PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#> 
 
 SELECT DISTINCT ?Neuron_IRI ?Neuron_Label ?A ?Region_A ?B ?Region_B ?C ?Region_C ?Species ?Species_link
-{
+{{
 
     ?Neuron_IRI rdfs:label ?Neuron_Label;
                 ilxtr:hasSomaLocation ?A;
@@ -43,7 +43,8 @@ SELECT DISTINCT ?Neuron_IRI ?Neuron_Label ?A ?Region_A ?B ?Region_B ?C ?Region_C
     ?C (rdfs:label | oboInOwl:hasExactSynonym) ?Region_C.
     ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
 
-}
+    FILTER (str(?Species) = "{species_param}")
+}}
 ORDER BY ?Neuron_IRI ?Region_A ?Region_B ?Region_C ?Species
 """
 
