@@ -1,6 +1,9 @@
 # Compiled Python files
 *.py[cod]
 
+# Cached data
+/sckan_compare/api_cache
+
 # Backup files
 *~
 *.bak
