@@ -32,8 +32,15 @@ class SckanCompare(object):
         self.cache_manager = CacheManager(os.path.join(
             os.path.dirname(__file__), 'api_cache'), max_cache_days)
         
-        temp_species = self.execute_query(query.distinct_species_query)
-        self.valid_species = [item[0] for item in temp_species]
+        self.valid_species = self.get_valid_species()
+
+    def get_valid_species(self):
+        temp_species = self.execute_query(query.unique_species_query)
+        return [item[0] for item in temp_species]
+
+    def get_valid_regions_for_species(self, species):
+        temp_regions = self.execute_query(query.unique_combinedregions_species_query, species)
+        return [item[0] for item in temp_regions]
 
     def execute_query(self, query_string, species=None, cached=True):
         # execute specified SPAQRL query and return result
