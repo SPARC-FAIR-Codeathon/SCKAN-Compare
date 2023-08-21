@@ -48,6 +48,25 @@ SELECT DISTINCT ?Neuron_IRI ?Neuron_Label ?A ?Region_A ?B ?Region_B ?C ?Region_C
 ORDER BY ?Neuron_IRI ?Region_A ?Region_B ?Region_C ?Species
 """
 
+distinct_species_query = """
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX partOf: <http://purl.obolibrary.org/obo/BFO_0000050>
+PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
+
+SELECT DISTINCT ?Species
+{
+    ?Neuron_IRI rdfs:label ?Neuron_Label;
+                ilxtr:hasSomaLocation ?A;
+                (ilxtr:hasAxonTerminalLocation | ilxtr:hasAxonSensoryLocation) ?B.
+    ?Neuron_IRI ilxtr:isObservedInSpecies ?Species_link.
+    ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
+}
+ORDER BY ?Species
+"""
+
 
 neuron_path_query = """
 PREFIX owl: <http://www.w3.org/2002/07/owl#>

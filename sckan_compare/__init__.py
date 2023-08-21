@@ -31,10 +31,22 @@ class SckanCompare(object):
         # self.load_json_file() # to be removed from init
         self.cache_manager = CacheManager(os.path.join(
             os.path.dirname(__file__), 'api_cache'), max_cache_days)
+        
+        temp_species = self.execute_query(query.distinct_species_query)
+        self.valid_species = [item[0] for item in temp_species]
 
-    def execute_query(self, query_string, species, cached=True):
+    def execute_query(self, query_string, species=None, cached=True):
         # execute specified SPAQRL query and return result
-        query_with_species = query_string.format(species_param=species) 
+        # identify if species placeholder present in query_string
+        if "{species_param}" in query_string:
+            if not species:
+                raise ValueError("species needs to be specified!")
+            if species not in self.valid_species:
+                raise ValueError("Invalid species specified!")
+            query_with_species = query_string.format(species_param=species)
+        else:
+            query_with_species = query_string
+
         if cached:
             cached_data = self.cache_manager.get_cached_data(
                 query_with_species + self.endpoint)
@@ -53,11 +65,14 @@ class SckanCompare(object):
         self.cache_manager.cache_data(query_with_species + self.endpoint, data)
         return data
 
-    def load_json_file(self):
+    def load_json_file(self, species=None):
+        if not species:
+            raise ValueError("species needs to be specified!")
+        
         datapath = pkg_resources.resource_filename("sckan_compare", "data")
-        if self.species == "Mus musculus":
+        if species == "Mus musculus":
             filepath = os.path.join(datapath, "coords_mouse.json")
-        elif self.species == "Rattus norvegicus":
+        elif species == "Rattus norvegicus":
             filepath = os.path.join(datapath, "coords_rat.json")
         else:
             # default
@@ -66,9 +81,9 @@ class SckanCompare(object):
         with open(filepath, encoding='utf-8-sig') as json_file:
             data = json.load(json_file)
 
-        self.region_dict[self.species] = {}
+        self.region_dict[species] = {}
         for item in data:
-            self.region_dict[self.species][item["Name"]] = [
+            self.region_dict[species][item["Name"]] = [
                 int(item["X"]), int(item["Y"])]
 
     def reset_vis(self):
