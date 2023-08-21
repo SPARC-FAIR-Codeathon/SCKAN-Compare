@@ -8,12 +8,14 @@ License: Apache License 2.0
 
 import os
 import json
+import time
 import pkg_resources
 import numpy as np
 import pandas as pd
 
 from . import globals
 from . import query
+from .cachemanager import CacheManager
 from .visualize import Visualizer
 
 
@@ -22,17 +24,34 @@ class SckanCompare(object):
     Base class for accessing functionality
     """
 
-    def __init__(self, species="Homo sapiens", endpoint=globals.BLAZEGRAPH_ENDPOINT):
+    def __init__(self, species="Homo sapiens", endpoint=globals.BLAZEGRAPH_ENDPOINT, max_cache_days=globals.DEFAULT_MAX_CACHE_DAYS):
         self.endpoint = endpoint
         self.region_dict = {}
         self.vis = None
         self.species = species
         self.load_json_file()
+        self.cache_manager = CacheManager(os.path.join(
+            os.path.dirname(__file__), 'api_cache'), max_cache_days)
 
-    def execute_query(self, query_string):
+    def execute_query(self, query_string, cached=True):
         # execute specified SPAQRL query and return result
-        return query.sparql_query(query_string, endpoint=self.endpoint)
-
+        if cached:
+            cached_data = self.cache_manager.get_cached_data(
+                query_string + self.endpoint)
+            if cached_data:
+                # to check for outdated cache
+                cached_time, data = cached_data
+                now = time.time()
+                if (now - cached_time) > (self.cache_manager.max_cache_days * 86400):
+                    # if outdated, remove the item; fetch afresh
+                    self.cache.pop(query_string + self.endpoint)
+                else:
+                    # return cached data
+                    return data
+        data = query.sparql_query(query_string, endpoint=self.endpoint)
+        # cache the result
+        self.cache.set(query_string + self.endpoint, (time.time(), data))
+        return data
 
     def load_json_file(self):
         datapath = pkg_resources.resource_filename("sckan_compare", "data")
@@ -49,8 +68,9 @@ class SckanCompare(object):
 
         self.region_dict[self.species] = {}
         for item in data:
-            self.region_dict[self.species][item["Name"]] = [int(item["X"]), int(item["Y"])]
-   
+            self.region_dict[self.species][item["Name"]] = [
+                int(item["X"]), int(item["Y"])]
+
     def reset_vis(self):
         self.vis = Visualizer(self.region_dict[self.species], self.species)
         return self.vis
@@ -71,24 +91,22 @@ class SckanCompare(object):
             # A->B
             self.vis.draw_edge_AB(region_A, region_B, neuron)
 
-
     def get_graph(self):
         return self.vis.get_figure()
-    
 
     def get_unique_region_IRI(self, df_result):
         """
         :param df_result: dataframe
         :return: unique regions in form of hyperlinks
         """
-        region_A = np.unique(df_result.loc[:,"A"])
-        region_B = np.unique(df_result.loc[:,"B"])
-        region_C = np.unique(df_result.loc[:,"C"])
-        unique_regions = np.unique(np.concatenate((region_A, region_B, region_C)))
+        region_A = np.unique(df_result.loc[:, "A"])
+        region_B = np.unique(df_result.loc[:, "B"])
+        region_C = np.unique(df_result.loc[:, "C"])
+        unique_regions = np.unique(
+            np.concatenate((region_A, region_B, region_C)))
         return unique_regions
 
-    
-    def get_unique_regions (self, df_result):
+    def get_unique_regions(self, df_result):
         """
         :param df_result: dataframe
         :return: region labels
@@ -111,26 +129,31 @@ class SckanCompare(object):
         """
 
         # first 100
-        formatted_links = " ,".join(["<{}>".format(link) for link in unique_regions[:100]])
+        formatted_links = " ,".join(["<{}>".format(link)
+                                    for link in unique_regions[:100]])
         test_query = test_template.format(formatted_links)
         result = self.execute_query(test_query)
         final_df = pd.DataFrame(result).loc[1:, :]
 
         # rest 100
-        formatted_links = " ,".join(["<{}>".format(link) for link in unique_regions[100:200]])
+        formatted_links = " ,".join(["<{}>".format(link)
+                                    for link in unique_regions[100:200]])
         test_query = test_template.format(formatted_links)
         result = self.execute_query(test_query)
-        final_df = pd.concat([final_df, pd.DataFrame(result).loc[1:, :]], ignore_index=True)
+        final_df = pd.concat([final_df, pd.DataFrame(
+            result).loc[1:, :]], ignore_index=True)
 
         # rest all
-        formatted_links = " ,".join(["<{}>".format(link) for link in unique_regions[200:]])
+        formatted_links = " ,".join(["<{}>".format(link)
+                                    for link in unique_regions[200:]])
         test_query = test_template.format(formatted_links)
         result = self.execute_query(test_query)
-        final_df = pd.concat([final_df, pd.DataFrame(result).loc[1:, :]], ignore_index=True)
+        final_df = pd.concat([final_df, pd.DataFrame(
+            result).loc[1:, :]], ignore_index=True)
 
         final_df.drop_duplicates(subset=0, keep='first', inplace=True)
         return final_df
-    
+
     # getting dataframe from queries
     def get_neuron_dataframe(self, result, species_name=None, phenotype_name=None):
         """
@@ -164,28 +187,37 @@ class SckanCompare(object):
                 filtered_df = df_result[(df_result.Species == species_name)]
                 unique_regions_df = self.get_unique_regions(filtered_df)
                 # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
-                replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
+                replacement_dict = dict(
+                    zip(unique_regions_df[0], unique_regions_df[1]))
 
                 # # Use the map function to replace the values in DataFrame 1
-                filtered_df.loc[:, "Region_A"] = filtered_df.A.map(replacement_dict)
-                filtered_df.loc[:, "Region_B"] = filtered_df.B.map(replacement_dict)
-                filtered_df.loc[:, "Region_C"] = filtered_df.C.map(replacement_dict)
+                filtered_df.loc[:, "Region_A"] = filtered_df.A.map(
+                    replacement_dict)
+                filtered_df.loc[:, "Region_B"] = filtered_df.B.map(
+                    replacement_dict)
+                filtered_df.loc[:, "Region_C"] = filtered_df.C.map(
+                    replacement_dict)
 
                 # remove duplicate
                 filtered_df = filtered_df.drop_duplicates()
-                filtered_df = filtered_df[(filtered_df.phenotype == phenotype_name)]
+                filtered_df = filtered_df[(
+                    filtered_df.phenotype == phenotype_name)]
 
                 return filtered_df
 
             else:
                 unique_regions_df = self.get_unique_regions(df_result)
                 # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
-                replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
+                replacement_dict = dict(
+                    zip(unique_regions_df[0], unique_regions_df[1]))
 
                 # # Use the map function to replace the values in DataFrame 1
-                df_result.loc[:, "Region_A"] = df_result.A.map(replacement_dict)
-                df_result.loc[:, "Region_B"] = df_result.B.map(replacement_dict)
-                df_result.loc[:, "Region_C"] = df_result.C.map(replacement_dict)
+                df_result.loc[:, "Region_A"] = df_result.A.map(
+                    replacement_dict)
+                df_result.loc[:, "Region_B"] = df_result.B.map(
+                    replacement_dict)
+                df_result.loc[:, "Region_C"] = df_result.C.map(
+                    replacement_dict)
 
                 # remove duplicate
                 df_result = df_result.drop_duplicates()
@@ -199,12 +231,16 @@ class SckanCompare(object):
                 filtered_df = df_result[(df_result.Species == species_name)]
                 unique_regions_df = self.get_unique_regions(filtered_df)
                 # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
-                replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
+                replacement_dict = dict(
+                    zip(unique_regions_df[0], unique_regions_df[1]))
 
                 # # Use the map function to replace the values in DataFrame 1
-                filtered_df.loc[:, "Region_A"] = filtered_df.A.map(replacement_dict)
-                filtered_df.loc[:, "Region_B"] = filtered_df.B.map(replacement_dict)
-                filtered_df.loc[:, "Region_C"] = filtered_df.C.map(replacement_dict)
+                filtered_df.loc[:, "Region_A"] = filtered_df.A.map(
+                    replacement_dict)
+                filtered_df.loc[:, "Region_B"] = filtered_df.B.map(
+                    replacement_dict)
+                filtered_df.loc[:, "Region_C"] = filtered_df.C.map(
+                    replacement_dict)
 
                 # remove duplicate
                 filtered_df = filtered_df.drop_duplicates()
@@ -214,12 +250,16 @@ class SckanCompare(object):
             else:
                 unique_regions_df = self.get_unique_regions(df_result)
                 # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
-                replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
+                replacement_dict = dict(
+                    zip(unique_regions_df[0], unique_regions_df[1]))
 
                 # # Use the map function to replace the values in DataFrame 1
-                df_result.loc[:, "Region_A"] = df_result.A.map(replacement_dict)
-                df_result.loc[:, "Region_B"] = df_result.B.map(replacement_dict)
-                df_result.loc[:, "Region_C"] = df_result.C.map(replacement_dict)
+                df_result.loc[:, "Region_A"] = df_result.A.map(
+                    replacement_dict)
+                df_result.loc[:, "Region_B"] = df_result.B.map(
+                    replacement_dict)
+                df_result.loc[:, "Region_C"] = df_result.C.map(
+                    replacement_dict)
 
                 # remove duplicate
                 df_result = df_result.drop_duplicates()
@@ -257,12 +297,16 @@ class SckanCompare(object):
             filtered_df = df_result[(df_result.Species == species_name)]
             unique_regions_df = self.get_unique_regions(filtered_df)
             # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
-            replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
+            replacement_dict = dict(
+                zip(unique_regions_df[0], unique_regions_df[1]))
 
             # # Use the map function to replace the values in DataFrame 1
-            filtered_df.loc[:, "Region_A"] = filtered_df.A.map(replacement_dict)
-            filtered_df.loc[:, "Region_B"] = filtered_df.B.map(replacement_dict)
-            filtered_df.loc[:, "Region_C"] = filtered_df.C.map(replacement_dict)
+            filtered_df.loc[:, "Region_A"] = filtered_df.A.map(
+                replacement_dict)
+            filtered_df.loc[:, "Region_B"] = filtered_df.B.map(
+                replacement_dict)
+            filtered_df.loc[:, "Region_C"] = filtered_df.C.map(
+                replacement_dict)
 
             # remove duplicate
             filtered_df = filtered_df.drop_duplicates()
@@ -272,7 +316,8 @@ class SckanCompare(object):
         else:
             unique_regions_df = self.get_unique_regions(df_result)
             # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
-            replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
+            replacement_dict = dict(
+                zip(unique_regions_df[0], unique_regions_df[1]))
 
             # # Use the map function to replace the values in DataFrame 1
             df_result.loc[:, "Region_A"] = df_result.A.map(replacement_dict)
@@ -283,72 +328,3 @@ class SckanCompare(object):
             df_result = df_result.drop_duplicates()
 
             return df_result
-
-# visualising projections of neurons
-import dash
-import dash_cytoscape as cyto
-import dash_html_components as html
-
-def visualise_projection(result_df):
-    
-    # getting unique nodes
-    a = np.unique(result_df.loc[:,'Neuron_1_Label'])
-    b = np.unique(result_df.loc[:,'Neuron_2_Label'])
-    unique_nodes= np.unique(np.concatenate((a,b)))
-        
-    nodes = []
-    for node in unique_nodes:
-        nodes.append({"data": {"id": node, "label": node}})
-    
-    # construct connections between these nodes as required
-    edges = []
-    for i in range(len(result_df)):
-        item = {"data": {"source": result_df.iloc[i,0], "target": result_df.iloc[i,1]}}
-        edges.append(item)
-    
-    elements = nodes + edges
-
-    #defines styling for the plot
-    default_stylesheet = [
-    {
-        "selector": "node",
-        "style": {
-            "width": "mapData(size, 0, 100, 20, 60)",
-            "height": "mapData(size, 0, 100, 20, 60)",
-            "content": "data(label)",
-            "font-size": "10px",
-            "text-valign": "center",
-            "text-halign": "center",}
-    },
-        {
-            "selector": "edge",
-            "style": {
-             #'line-style': 'dashed',
-            'target-arrow-color': 'black',
-            'target-arrow-shape': 'vee',
-            'curve-style' : 'straight',}
-      }
-    ]
-
-
-    app = dash.Dash(__name__)
-    app.layout = html.Div([
-        cyto.Cytoscape(
-            id='cytoscape',
-            elements=elements,
-            stylesheet = default_stylesheet,
-            style={'width': '100%', 'height': '400px', 'background-image': 'url(./sample_bg.png)'},
-            layout={
-                # 'name': 'preset'
-                'name': 'cose'
-                # 'name': 'random'
-                #'name': 'circle'
-                # 'name': 'grid'
-            }
-            
-        )
-    ])
-    
-    
-    if __name__ == '__main__':
-        app.run_server(debug=True, port=8051)
