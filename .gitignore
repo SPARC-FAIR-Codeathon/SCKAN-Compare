@@ -3,6 +3,7 @@
 
 # Cached data
 /sckan_compare/api_cache
+api_cache.*
 
 # Backup files
 *~
