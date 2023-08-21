@@ -48,7 +48,7 @@ SELECT DISTINCT ?Neuron_IRI ?Neuron_Label ?A ?Region_A ?B ?Region_B ?C ?Region_C
 ORDER BY ?Neuron_IRI ?Region_A ?Region_B ?Region_C ?Species
 """
 
-distinct_species_query = """
+unique_species_query = """
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
