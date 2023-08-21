@@ -24,33 +24,33 @@ class SckanCompare(object):
     Base class for accessing functionality
     """
 
-    def __init__(self, species="Homo sapiens", endpoint=globals.BLAZEGRAPH_ENDPOINT, max_cache_days=globals.DEFAULT_MAX_CACHE_DAYS):
+    def __init__(self, endpoint=globals.BLAZEGRAPH_ENDPOINT, max_cache_days=globals.DEFAULT_MAX_CACHE_DAYS):
         self.endpoint = endpoint
         self.region_dict = {}
         self.vis = None
-        self.species = species
-        self.load_json_file()
+        # self.load_json_file() # to be removed from init
         self.cache_manager = CacheManager(os.path.join(
             os.path.dirname(__file__), 'api_cache'), max_cache_days)
 
-    def execute_query(self, query_string, cached=True):
+    def execute_query(self, query_string, species, cached=True):
         # execute specified SPAQRL query and return result
+        query_with_species = query_string.format(species_param=species) 
         if cached:
             cached_data = self.cache_manager.get_cached_data(
-                query_string + self.endpoint)
+                query_with_species + self.endpoint)
             if cached_data:
                 # to check for outdated cache
                 cached_time, data = cached_data
                 now = time.time()
                 if (now - cached_time) > (self.cache_manager.max_cache_days * 86400):
                     # if outdated, remove the item; fetch afresh
-                    self.cache.pop(query_string + self.endpoint)
+                    self.cache.pop(query_with_species + self.endpoint)
                 else:
                     # return cached data
                     return data
-        data = query.sparql_query(query_string, endpoint=self.endpoint)
+        data = query.sparql_query(query_with_species, endpoint=self.endpoint)
         # cache the result
-        self.cache.set(query_string + self.endpoint, (time.time(), data))
+        self.cache_manager.cache_data(query_with_species + self.endpoint, data)
         return data
 
     def load_json_file(self):
