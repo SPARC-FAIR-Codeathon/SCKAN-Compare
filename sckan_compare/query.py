@@ -173,6 +173,78 @@ SELECT DISTINCT ?Region
 ORDER BY ?Region
 """
 
+combined_regions_all_species_without_synonyms_query = """
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#> 
+
+SELECT DISTINCT ?Region_URI ?Region
+{{
+
+    ?Neuron_IRI (ilxtr:hasSomaLocation | ilxtr:hasAxonLocation | ilxtr:hasAxonTerminalLocation | ilxtr:hasAxonSensoryLocation) ?Region_URI. 
+    ?Neuron_IRI ilxtr:isObservedInSpecies ?Species_link.
+
+    ?Region_URI rdfs:label ?Region.
+}}
+ORDER BY ?Region_URI ?Region
+"""
+
+combined_regions_all_species_with_synonyms_query = """
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#> 
+
+SELECT DISTINCT ?Region_URI ?Region
+{{
+
+    ?Neuron_IRI (ilxtr:hasSomaLocation | ilxtr:hasAxonLocation | ilxtr:hasAxonTerminalLocation | ilxtr:hasAxonSensoryLocation) ?Region_URI. 
+    ?Neuron_IRI ilxtr:isObservedInSpecies ?Species_link.
+
+    ?Region_URI (rdfs:label | oboInOwl:hasExactSynonym) ?Region.
+}}
+ORDER BY ?Region_URI ?Region
+"""
+
+# old query; better alternatives available above
+unique_combinedregions_all_species_query = """
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
+
+SELECT DISTINCT ?Region
+{
+    {
+        ?Neuron_IRI rdfs:label ?Neuron_Label;
+                    ilxtr:hasSomaLocation ?A;
+                    ilxtr:isObservedInSpecies ?Species_link.
+
+        ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
+
+        ?A (rdfs:label | oboInOwl:hasExactSynonym) ?Region.
+    }
+    UNION
+    {
+        ?Neuron_IRI rdfs:label ?Neuron_Label;
+                    (ilxtr:hasAxonLocation | ilxtr:hasAxonTerminalLocation | ilxtr:hasAxonSensoryLocation) ?B;
+                    ilxtr:isObservedInSpecies ?Species_link.
+
+        ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
+
+        ?B (rdfs:label | oboInOwl:hasExactSynonym) ?Region.
+    }
+    UNION
+    {
+        ?Neuron_IRI rdfs:label ?Neuron_Label;
+                    ilxtr:hasAxonLocation ?C;
+                    ilxtr:isObservedInSpecies ?Species_link.
+
+        ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
+
+        ?C (rdfs:label | oboInOwl:hasExactSynonym) ?Region.
+    }
+}
+ORDER BY ?Region
+"""
 
 neuron_path_query = """
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
