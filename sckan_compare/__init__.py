@@ -25,9 +25,8 @@ class SckanCompare(object):
 
     def __init__(self, endpoint=globals.BLAZEGRAPH_ENDPOINT, max_cache_days=globals.DEFAULT_MAX_CACHE_DAYS):
         self.endpoint = endpoint
-        self.region_dict = {}
-        self.vis = None
-        # self.load_json_species_map() # to be removed from init
+        self.anatomy_map_dict = {}
+
         self.cache_manager = CacheManager(os.path.join(
             os.path.dirname(__file__), 'api_cache'), max_cache_days)
         
@@ -75,8 +74,6 @@ class SckanCompare(object):
         self.cache_manager.cache_data(query_with_species + self.endpoint, data)
         return data
 
-
-
     def replace_region_synonyms(self, df):
         # function to replace synonyms with unique label
         # e.g. 'ovary' :  http://purl.obolibrary.org/obo/UBERON_0000992
@@ -95,7 +92,7 @@ class SckanCompare(object):
             df['Region_B'] = df['B'].map(uri_label_dict)
         if 'Region_C' in df.columns:
             df['Region_C'] = df['C'].map(uri_label_dict)
-        return df
+        return df, uri_label_dict
 
     def get_filtered_dataframe(self, result):
         # convert data to pandas dataframe with column names
@@ -105,42 +102,33 @@ class SckanCompare(object):
         df_result = utils.remove_duplicate_species(df_result)
 
         # replace synonyms with unique labels for each region
-        df_result = self.replace_region_synonyms(df_result)
+        df_result, uri_label_dict = self.replace_region_synonyms(df_result)
 
         # remove duplicate rows based on all columns  
         df_result = df_result.drop_duplicates()
 
-        return df_result
+        return df_result, uri_label_dict
 
     def load_json_species_map(self, species=None):
         if not species:
             raise ValueError("species needs to be specified!")
+        if species not in self.valid_species:
+            raise ValueError("Invalid species specified!")
+        if species not in globals.AVAILABLE_SPECIES_MAPS.keys():
+            raise ValueError("{} visual map not currently available!".format(species))
         
         datapath = pkg_resources.resource_filename("sckan_compare", "data")
-        if species == "Mus musculus":
-            filepath = os.path.join(datapath, "coords_mouse.json")
-        elif species == "Rattus norvegicus":
-            filepath = os.path.join(datapath, "coords_rat.json")
-        else:
-            # default
-            filepath = os.path.join(datapath, "coords_human.json")
+        filepath = os.path.join(datapath, globals.AVAILABLE_SPECIES_MAPS[species])
 
         with open(filepath, encoding='utf-8-sig') as json_file:
             data = json.load(json_file)
 
-        self.region_dict[species] = {}
+        self.anatomy_map_dict[species] = {}
         for item in data:
-            self.region_dict[species][item["Name"]] = [
+            self.anatomy_map_dict[species][item["Name"]] = [
                 int(item["X"]), int(item["Y"])]
 
-    def reset_vis(self):
-        self.vis = Visualizer(self.region_dict[self.species], self.species)
-        return self.vis
-
-    def add_connection(self, region_A=None, region_B=None, region_C=None, neuron=None):
-        if not self.vis:
-            self.vis = Visualizer(self.region_dict[self.species], self.species)
-
+    def add_connection(self, vis_obj, region_A=None, region_B=None, region_C=None, neuron=None):
         if not region_A:
             raise ValueError("region_A needs to be specified!")
         if not region_B:
@@ -148,10 +136,28 @@ class SckanCompare(object):
 
         if region_C:
             # A->C->B
-            self.vis.draw_edge_ABC(region_A, region_B, region_C, neuron)
+            vis_obj.draw_edge_ABC(region_A, region_B, region_C, neuron)
         else:
             # A->B
-            self.vis.draw_edge_AB(region_A, region_B, neuron)
+            vis_obj.draw_edge_AB(region_A, region_B, neuron)
 
-    def get_graph(self):
-        return self.vis.get_figure()
+    def plot_dataframe_connectivity(self, df, species=None, region_A=None, region_B=None, region_C=None):
+        # load the species specific visual map
+        self.load_json_species_map(species)
+
+        # create visualizer object
+        vis = Visualizer(self.anatomy_map_dict[species], species)
+        
+        # add all connections specified in dataframe
+        for idx in range(df.shape[0]):
+            if 'Region_C' in df.columns:
+                self.add_connection(vis,
+                                    region_A=df.iloc[idx,3],
+                                    region_B=df.iloc[idx,5],
+                                    region_C=df.iloc[idx,7],
+                                    neuron=df.iloc[idx,1])
+            else:
+                self.add_connection(vis,
+                                    region_A=df.iloc[idx,3],
+                                    region_B=df.iloc[idx,5],
+                                    neuron=df.iloc[idx,1])
