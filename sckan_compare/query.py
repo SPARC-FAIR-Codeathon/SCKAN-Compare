@@ -48,129 +48,130 @@ SELECT DISTINCT ?Neuron_IRI ?Neuron_Label ?A ?Region_A ?B ?Region_B ?C ?Region_C
 ORDER BY ?Neuron_IRI ?Region_A ?Region_B ?Region_C ?Species
 """
 
-unique_species_query = """
+# Note: this still returns some synonyms for certain entries
+# TODO: Discuss with SPARC team why this is so
+species_without_synonyms_query = """
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX partOf: <http://purl.obolibrary.org/obo/BFO_0000050>
 PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
-PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#> 
 
-SELECT DISTINCT ?Species
-{{
-    ?Neuron_IRI rdfs:label ?Neuron_Label;
-                ilxtr:hasSomaLocation ?A;
-                (ilxtr:hasAxonTerminalLocation | ilxtr:hasAxonSensoryLocation) ?B.
+SELECT DISTINCT ?Species_link ?Species
+{
     ?Neuron_IRI ilxtr:isObservedInSpecies ?Species_link.
-    ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
-}}
-ORDER BY ?Species
+    ?Species_link rdfs:label ?Species.
+    
+}
+ORDER BY ?Species_link ?Species
 """
 
-unique_regionsA_species_query = """
+species_with_synonyms_query = """
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX partOf: <http://purl.obolibrary.org/obo/BFO_0000050>
+PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#> 
+
+SELECT DISTINCT ?Species_link ?Species
+{
+    ?Neuron_IRI ilxtr:isObservedInSpecies ?Species_link.
+    ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
+    
+}
+ORDER BY ?Species_link ?Species
+"""
+
+regionsA_specify_species_with_synonyms_query = """
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
 PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
 
-SELECT DISTINCT ?Region_A
+SELECT DISTINCT ?Species_link ?Region_A
 {{
-    ?Neuron_IRI rdfs:label ?Neuron_Label;
-                ilxtr:hasSomaLocation ?A;
+    ?Neuron_IRI ilxtr:hasSomaLocation ?A;
                 ilxtr:isObservedInSpecies ?Species_link.
     
     ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
-    
     ?A (rdfs:label | oboInOwl:hasExactSynonym) ?Region_A.
     
     FILTER (str(?Species) = "{species_param}")
 }}
-ORDER BY ?Region_A
+ORDER BY ?Species_link ?Region_A
 """
 
-unique_regionsB_species_query = """
+regionsB_specify_species_with_synonyms_query = """
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
 PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
 
-SELECT DISTINCT ?Region_B
+SELECT DISTINCT ?Species_link ?Region_B
 {{
-    ?Neuron_IRI rdfs:label ?Neuron_Label;
-                (ilxtr:hasAxonLocation | ilxtr:hasAxonTerminalLocation | ilxtr:hasAxonSensoryLocation) ?B;
+    ?Neuron_IRI (ilxtr:hasAxonLocation | ilxtr:hasAxonTerminalLocation | ilxtr:hasAxonSensoryLocation) ?B;
                 ilxtr:isObservedInSpecies ?Species_link.
 
     ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
-
     ?B (rdfs:label | oboInOwl:hasExactSynonym) ?Region_B.
 
     FILTER (str(?Species) = "{species_param}")
 }}
-ORDER BY ?Region_B
+ORDER BY ?Species_link ?Region_B
 """
 
-unique_regionsC_species_query = """
+regionsC_specify_species_with_synonyms_query = """
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
 PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
 
-SELECT DISTINCT ?Region_C
+SELECT DISTINCT ?Species_link ?Region_C
 {{
-    ?Neuron_IRI rdfs:label ?Neuron_Label;
-                ilxtr:hasAxonLocation ?C;
+    ?Neuron_IRI ilxtr:hasAxonLocation ?C;
                 ilxtr:isObservedInSpecies ?Species_link.
 
     ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
-
     ?C (rdfs:label | oboInOwl:hasExactSynonym) ?Region_C.
 
     FILTER (str(?Species) = "{species_param}")
 }}
-ORDER BY ?Region_C
+ORDER BY ?Species_link ?Region_C
 """
 
-unique_combined_regions_species_query = """
+combined_regions_specify_species_without_synonyms_query = """
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
-PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#> 
 
-SELECT DISTINCT ?Region
-{
-    {
-        ?Neuron_IRI rdfs:label ?Neuron_Label;
-                    ilxtr:hasSomaLocation ?A;
-                    ilxtr:isObservedInSpecies ?Species_link.
+SELECT DISTINCT ?Region_URI ?Region
+{{
 
-        ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
+    ?Neuron_IRI (ilxtr:hasSomaLocation | ilxtr:hasAxonLocation | ilxtr:hasAxonTerminalLocation | ilxtr:hasAxonSensoryLocation) ?Region_URI. 
+    ?Neuron_IRI ilxtr:isObservedInSpecies ?Species_link.
+    ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
+    ?Region_URI rdfs:label ?Region.
+    
+    FILTER (str(?Species) = "{species_param}")
+}}
+ORDER BY ?Region_URI ?Region
+"""
 
-        ?A (rdfs:label | oboInOwl:hasExactSynonym) ?Region.
+combined_regions_specify_species_with_synonyms_query = """
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#> 
 
-        FILTER (str(?Species) = "{species_param}")
-    }
-    UNION
-    {
-        ?Neuron_IRI rdfs:label ?Neuron_Label;
-                    (ilxtr:hasAxonLocation | ilxtr:hasAxonTerminalLocation | ilxtr:hasAxonSensoryLocation) ?B;
-                    ilxtr:isObservedInSpecies ?Species_link.
+SELECT DISTINCT ?Region_URI ?Region
+{{
 
-        ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
-
-        ?B (rdfs:label | oboInOwl:hasExactSynonym) ?Region.
-
-        FILTER (str(?Species) = "{species_param}")
-    }
-    UNION
-    {
-        ?Neuron_IRI rdfs:label ?Neuron_Label;
-                    ilxtr:hasAxonLocation ?C;
-                    ilxtr:isObservedInSpecies ?Species_link.
-
-        ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
-
-        ?C (rdfs:label | oboInOwl:hasExactSynonym) ?Region.
-
-        FILTER (str(?Species) = "{species_param}")
-    }
-}
-ORDER BY ?Region
+    ?Neuron_IRI (ilxtr:hasSomaLocation | ilxtr:hasAxonLocation | ilxtr:hasAxonTerminalLocation | ilxtr:hasAxonSensoryLocation) ?Region_URI. 
+    ?Neuron_IRI ilxtr:isObservedInSpecies ?Species_link.
+    ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
+    ?Region_URI (rdfs:label | oboInOwl:hasExactSynonym) ?Region.
+    
+    FILTER (str(?Species) = "{species_param}")
+}}
+ORDER BY ?Region_URI ?Region
 """
 
 combined_regions_all_species_without_synonyms_query = """
@@ -203,47 +204,6 @@ SELECT DISTINCT ?Region_URI ?Region
     ?Region_URI (rdfs:label | oboInOwl:hasExactSynonym) ?Region.
 }}
 ORDER BY ?Region_URI ?Region
-"""
-
-# old query; better alternatives available above
-unique_combined_regions_all_species_query = """
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
-PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#>
-
-SELECT DISTINCT ?Region
-{
-    {
-        ?Neuron_IRI rdfs:label ?Neuron_Label;
-                    ilxtr:hasSomaLocation ?A;
-                    ilxtr:isObservedInSpecies ?Species_link.
-
-        ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
-
-        ?A (rdfs:label | oboInOwl:hasExactSynonym) ?Region.
-    }
-    UNION
-    {
-        ?Neuron_IRI rdfs:label ?Neuron_Label;
-                    (ilxtr:hasAxonLocation | ilxtr:hasAxonTerminalLocation | ilxtr:hasAxonSensoryLocation) ?B;
-                    ilxtr:isObservedInSpecies ?Species_link.
-
-        ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
-
-        ?B (rdfs:label | oboInOwl:hasExactSynonym) ?Region.
-    }
-    UNION
-    {
-        ?Neuron_IRI rdfs:label ?Neuron_Label;
-                    ilxtr:hasAxonLocation ?C;
-                    ilxtr:isObservedInSpecies ?Species_link.
-
-        ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
-
-        ?C (rdfs:label | oboInOwl:hasExactSynonym) ?Region.
-    }
-}
-ORDER BY ?Region
 """
 
 neuron_path_query = """
