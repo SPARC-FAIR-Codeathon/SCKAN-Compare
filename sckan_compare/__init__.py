@@ -33,18 +33,18 @@ class SckanCompare(object):
         self.valid_species = self.get_valid_species()
 
     def get_valid_species(self):
-        temp_species = self.execute_query(query.unique_species_query)
-        return [item[0] for item in temp_species]
+        temp_species = self.execute_query(query.species_without_synonyms_query)
+        return [item[1] for item in temp_species[1:]]
     
     def get_valid_regions_all_species(self):
-        temp_regions = self.execute_query(query.unique_combinedregions_all_species_query, species)
+        temp_regions = self.execute_query(query.combined_regions_all_species_without_synonyms_query)
         return [item[0] for item in temp_regions]
 
     def get_valid_regions_for_species(self, species):
-        temp_regions = self.execute_query(query.unique_combinedregions_species_query, species)
+        temp_regions = self.execute_query(query.combined_regions_specify_species_without_synonyms_query, species)
         return [item[0] for item in temp_regions]
 
-    def execute_query(self, query_string, species=None, cached=True):
+    def execute_query(self, query_string, species=None, cached=False):
         # execute specified SPAQRL query and return result
         # identify if species placeholder present in query_string
         if "{species_param}" in query_string:
@@ -73,9 +73,31 @@ class SckanCompare(object):
         # cache the result
         self.cache_manager.cache_data(query_with_species + self.endpoint, data)
         return data
+    
+    def replace_species_synonyms(self, df):
+        # function to replace species synonyms with unique label
+        # e.g. 'Rattus norvegicus' : http://purl.obolibrary.org/obo/NCBITaxon_10116
+        # has several synonyms, such as 'brown rat', 'Norway rat', 'rats', 'rat'
+        # this function is used to map these synonyms to the parent label
+        output = self.execute_query(query.unique_species_without_synonyms_query)
+        uri_label_dict = {}
+        # first element is column labels, so ignore
+        for item in output[1:]:
+            if item[0] in uri_label_dict:
+                # Note: query returns some synonyms for certain entries
+                # TODO: Discuss with SPARC team why this is so
+                # Handling this now by picking shortest label
+                if len(item[1]) > uri_label_dict[item[0]]:
+                    continue
+            uri_label_dict[item[0]] = item[1]
+        
+        # update values in dataframe
+        if 'Species' in df.columns:
+            df['Species'] = df['Species_link'].map(uri_label_dict)
+        return df
 
     def replace_region_synonyms(self, df):
-        # function to replace synonyms with unique label
+        # function to replace region synonyms with unique label
         # e.g. 'ovary' :  http://purl.obolibrary.org/obo/UBERON_0000992
         # has several synonyms, such as 'animal ovary', 'female gonad', etc
         # this function is used to map these synonyms to the parent label
@@ -92,7 +114,7 @@ class SckanCompare(object):
             df['Region_B'] = df['B'].map(uri_label_dict)
         if 'Region_C' in df.columns:
             df['Region_C'] = df['C'].map(uri_label_dict)
-        return df, uri_label_dict
+        return df
 
     def get_filtered_dataframe(self, result):
         # convert data to pandas dataframe with column names
@@ -102,12 +124,12 @@ class SckanCompare(object):
         df_result = utils.remove_duplicate_species(df_result)
 
         # replace synonyms with unique labels for each region
-        df_result, uri_label_dict = self.replace_region_synonyms(df_result)
+        df_result = self.replace_region_synonyms(df_result)
 
         # remove duplicate rows based on all columns  
         df_result = df_result.drop_duplicates()
 
-        return df_result, uri_label_dict
+        return df_result
 
     def load_json_species_map(self, species=None):
         if not species:
@@ -161,3 +183,4 @@ class SckanCompare(object):
                                     region_A=df.iloc[idx,3],
                                     region_B=df.iloc[idx,5],
                                     neuron=df.iloc[idx,1])
+        return vis
