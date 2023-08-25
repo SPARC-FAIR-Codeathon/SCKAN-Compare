@@ -17,7 +17,7 @@ dist
 build
 .eggs/
 docs/_build/
-docs_sphinx/reference
+docs/reference
 output/
 
 # Unit test / coverage reports
