@@ -8,16 +8,36 @@ import time
 import diskcache
 
 
-class CacheManager:
+class CacheManager(object):
     """
-    Class for managing cached data.
+    A class for managing a disk-based cache with expiration for cached data.
 
     Parameters
     ----------
     cache_directory : str
-        The directory path where the cache will be stored.
+        Path to the directory for storing cache data.
     max_cache_days : int
-        Maximum number of days to keep cached data.
+        Maximum number of days a cached entry is considered valid.
+
+    Attributes
+    ----------
+    cache : diskcache.Cache
+        Disk cache object for storing data.
+    max_cache_days : int
+        Maximum number of days a cached entry is considered valid.
+
+    Methods
+    -------
+    __init__(cache_directory, max_cache_days):
+        Initialize the CacheManager class.
+    create_disk_cache(directory):
+        Create a disk cache object.
+    get_cached_data(key):
+        Retrieve cached data associated with a given key.
+    cache_data(key, data):
+        Cache data with an associated key.
+    invalidate_old_cache_entries():
+        Remove cached entries that have expired.
     """
 
     def __init__(self, cache_directory, max_cache_days):
