@@ -14,7 +14,7 @@ class Visualizer(object):
 
         self.fig = go.FigureWidget()
         self.fig.layout.hovermode = 'closest'
-        self.fig.layout.hoverdistance = -1 #ensures no "gaps" for selecting sparse data
+        self.fig.layout.hoverdistance = -1 # ensures no "gaps" for selecting sparse data
 
         self.fig.update_xaxes(showgrid=False, zeroline=False, visible=False, showticklabels=False)
         self.fig.update_yaxes(showgrid=False, zeroline=False, visible=False, showticklabels=False)
