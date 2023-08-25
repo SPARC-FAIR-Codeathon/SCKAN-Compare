@@ -86,8 +86,9 @@ class SckanCompare(object):
             if item[0] in uri_label_dict:
                 # Note: query returns some synonyms for certain entries
                 # TODO: Discuss with SPARC team why this is so
-                # Handling this now by picking shortest label
-                if len(item[1]) > uri_label_dict[item[0]]:
+                # Temporary solution:
+                # -> Handling this now by picking shortest label
+                if len(item[1]) >= len(uri_label_dict[item[0]]):
                     continue
             uri_label_dict[item[0]] = item[1]
         
@@ -105,6 +106,13 @@ class SckanCompare(object):
         uri_label_dict = {}
         # first element is column labels, so ignore
         for item in output[1:]:
+            if item[0] in uri_label_dict:
+                # Note: query returns some synonyms for certain entries
+                # TODO: Discuss with SPARC team why this is so
+                # Temporary solution:
+                # -> Handling this now by picking shortest label
+                if len(item[1]) >= len(uri_label_dict[item[0]]):
+                    continue
             uri_label_dict[item[0]] = item[1]
 
         # update values in dataframe
