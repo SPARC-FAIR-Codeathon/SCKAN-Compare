@@ -1,12 +1,64 @@
+"""
+Block visualization for SckanCompare package.
+
+License: Apache License 2.0
+"""
+
 import os
 import pkg_resources
 import numpy as np
 import plotly.graph_objects as go
 from PIL import Image
 
+
 class SimpleVisualizer(object):
+    """
+    A class for creating block visualizations using Plotly.
+
+    Parameters
+    ----------
+    None
+
+    Attributes
+    ----------
+    SCALE : int
+        Scaling factor for visualization.
+    MAX_Y : int
+        Maximum Y coordinate.
+    MAX_X : int
+        Maximum X coordinate.
+    icons : dict
+        Dictionary of icons for nodes.
+    fig : go.FigureWidget
+        Plotly figure widget for visualization.
+
+    Methods
+    -------
+    __init__():
+        Initialize the SimpleVisualizer class.
+    interpolate_coordinates(point1, point2, resolution=0.1):
+        Interpolate between two cartesian coordinates.
+    plot_figure(df, region_A, region_B):
+        Plot the visualization.
+    update_graph():
+        Update the layout of the figure.
+    draw_block_bg(x0, y0, x1, y1, opacity, color):
+        Draw a rectangular background block.
+    draw_image(icon, x, y):
+        Draw an image on the visualization.
+    draw_connections(x, y, label, color):
+        Draw connections between nodes.
+    add_text(x, y, text, fontsize=20):
+        Add text annotation to the visualization.
+    mark_node(x, y, label):
+        Mark a node on the visualization.
+    """
+
 
     def __init__(self):
+        """
+        Initialize the SimpleVisualizer class.
+        """
         self.SCALE = 150
         self.MAX_Y = 900
 
@@ -27,14 +79,20 @@ class SimpleVisualizer(object):
     def interpolate_coordinates(self, point1, point2, resolution=0.1):
         """
         Interpolate between two cartesian coordinates with a given resolution using NumPy.
-        
-        Parameters:
-            point1 (tuple): First cartesian coordinate (x1, y1).
-            point2 (tuple): Second cartesian coordinate (x2, y2).
-            resolution (float): Interpolation resolution.
-            
-        Returns:
-            tuple: Two lists of interpolated x and y coordinates.
+
+        Parameters
+        ----------
+        point1 : tuple
+            First cartesian coordinate (x1, y1).
+        point2 : tuple
+            Second cartesian coordinate (x2, y2).
+        resolution : float, optional
+            Interpolation resolution.
+
+        Returns
+        -------
+        tuple
+            Two lists of interpolated x and y coordinates.
         """
         x1, y1 = point1
         x2, y2 = point2
@@ -48,6 +106,23 @@ class SimpleVisualizer(object):
         return list(interpolated_x), list(interpolated_y)    
 
     def plot_figure(self, df, region_A, region_B):
+        """
+        Plot the block visualization.
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            Dataframe containing the required data.
+        region_A : str
+            Name of region A.
+        region_B : str
+            Name of region B.
+
+        Returns
+        -------
+        go.FigureWidget
+            The Plotly figure widget.
+        """
         req_df = df[(df.Region_A == region_A) & (df.Region_B == region_B)]
         list_region_C = req_df.Region_C.unique()
 
@@ -140,6 +215,9 @@ class SimpleVisualizer(object):
         return self.fig
 
     def update_graph(self):
+        """
+        Update the layout of the figure.
+        """
         self.fig.update_xaxes(showgrid=False, zeroline=False, visible=False, showticklabels=False)
         self.fig.update_yaxes(showgrid=False, zeroline=False, visible=False, showticklabels=False)
         self.fig.update_yaxes(range = [self.MAX_Y, 0])
@@ -150,6 +228,24 @@ class SimpleVisualizer(object):
 
 
     def draw_block_bg(self, x0, y0, x1, y1, opacity, color):
+        """
+        Draw a rectangular background block.
+
+        Parameters
+        ----------
+        x0 : int
+            Starting X coordinate.
+        y0 : int
+            Starting Y coordinate.
+        x1 : int
+            Ending X coordinate.
+        y1 : int
+            Ending Y coordinate.
+        opacity : float
+            Opacity of the block.
+        color : str
+            Color of the block.
+        """
         self.fig.add_shape(
             type="rect",
             xref="x", yref="y",
@@ -163,6 +259,18 @@ class SimpleVisualizer(object):
         )
 
     def draw_image(self, icon, x, y):
+        """
+        Draw an image on the visualization.
+
+        Parameters
+        ----------
+        icon : PIL.Image.Image
+            Image to be drawn.
+        x : int
+            X coordinate for placing the image.
+        y : int
+            Y coordinate for placing the image.
+        """
         self.fig.add_layout_image(
             dict(
                 source=icon,
@@ -180,6 +288,20 @@ class SimpleVisualizer(object):
         )
 
     def draw_connections(self, x, y, label, color):
+        """
+        Draw connections between nodes.
+
+        Parameters
+        ----------
+        x : list
+            List of X coordinates for connections.
+        y : list
+            List of Y coordinates for connections.
+        label : str
+            Label for the connections.
+        color : str
+            Color of the connections.
+        """
         self.fig.add_trace(
             go.Scatter(
                 x=x,
@@ -194,6 +316,20 @@ class SimpleVisualizer(object):
         )
 
     def add_text(self, x, y, text, fontsize=20):
+        """
+        Add text annotation to the visualization.
+
+        Parameters
+        ----------
+        x : int
+            X coordinate for placing the text annotation.
+        y : int
+            Y coordinate for placing the text annotation.
+        text : str
+            Text to be displayed.
+        fontsize : int, optional
+            Font size of the text.
+        """
         self.fig.add_annotation(
             x=x,
             y=y,
@@ -210,6 +346,18 @@ class SimpleVisualizer(object):
         )
 
     def mark_node(self, x, y, label):
+        """
+        Mark a node on the visualization.
+
+        Parameters
+        ----------
+        x : int
+            X coordinate for placing the marker.
+        y : int
+            Y coordinate for placing the marker.
+        label : str
+            Label for the marker.
+        """
         self.fig.add_trace(go.Scatter(
             x=[x],
             y=[y],
