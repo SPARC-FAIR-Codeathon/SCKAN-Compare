@@ -16,6 +16,8 @@ api_cache.*
 dist
 build
 .eggs/
+docs/_build/
+docs_sphinx/reference
 output/
 
 # Unit test / coverage reports
