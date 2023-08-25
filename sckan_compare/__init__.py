@@ -24,6 +24,16 @@ class SckanCompare(object):
     """
 
     def __init__(self, endpoint=globals.BLAZEGRAPH_ENDPOINT, max_cache_days=globals.DEFAULT_MAX_CACHE_DAYS):
+        """
+        Initialize SckanCompare object.
+
+        Parameters
+        ----------
+        endpoint : str, optional
+            The Blazegraph endpoint URL. Defaults to globals.BLAZEGRAPH_ENDPOINT (https://blazegraph.scicrunch.io/blazegraph/sparql).
+        max_cache_days : int, optional
+            Maximum number of days to keep cached data. Defaults to globals.DEFAULT_MAX_CACHE_DAYS (7 days).
+        """
         self.endpoint = endpoint
         self.anatomy_map_dict = {}
 
@@ -33,19 +43,64 @@ class SckanCompare(object):
         self.valid_species = self.get_valid_species()
 
     def get_valid_species(self):
+        """
+        Retrieve a list of valid species from the data source.
+
+        Returns
+        -------
+        list
+            List of valid species.
+        """
         temp_species = self.execute_query(query.species_without_synonyms_query)
         return [item[1] for item in temp_species[1:]]
     
     def get_valid_regions_all_species(self):
+        """
+        Retrieve a list of valid regions for all species from the data source.
+
+        Returns
+        -------
+        list
+            List of valid regions for all species.
+        """
         temp_regions = self.execute_query(query.combined_regions_all_species_without_synonyms_query)
         return [item[0] for item in temp_regions]
 
     def get_valid_regions_for_species(self, species):
+        """
+        Retrieve a list of valid regions for a specific species from the data source.
+
+        Parameters
+        ----------
+        species : str
+            The species for which to retrieve valid regions.
+
+        Returns
+        -------
+        list
+            List of valid regions for the specified species.
+        """
         temp_regions = self.execute_query(query.combined_regions_specify_species_without_synonyms_query, species)
         return [item[0] for item in temp_regions]
 
     def execute_query(self, query_string, species=None, cached=False):
-        # execute specified SPAQRL query and return result
+        """
+        Execute a SPARQL query and return the result.
+
+        Parameters
+        ----------
+        query_string : str
+            The SPARQL query string to execute.
+        species : str, optional
+            The species to consider in the query, if applicable.
+        cached : bool, optional
+            Whether to use cached data if available. Defaults to False.
+
+        Returns
+        -------
+        list
+            The query result.
+        """
         # identify if species placeholder present in query_string
         if "{species_param}" in query_string:
             if not species:
@@ -75,10 +130,23 @@ class SckanCompare(object):
         return data
     
     def replace_species_synonyms(self, df):
-        # function to replace species synonyms with unique label
-        # e.g. 'Rattus norvegicus' : http://purl.obolibrary.org/obo/NCBITaxon_10116
-        # has several synonyms, such as 'brown rat', 'Norway rat', 'rats', 'rat'
-        # this function is used to map these synonyms to the parent label
+        """
+        Replace species synonyms in a DataFrame with unique labels.
+
+        e.g. 'Rattus norvegicus' : http://purl.obolibrary.org/obo/NCBITaxon_10116
+        has several synonyms, such as 'brown rat', 'Norway rat', 'rats', 'rat'.
+        This method is used to map these synonyms to the parent label.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            The DataFrame containing species information.
+
+        Returns
+        -------
+        pandas.DataFrame
+            The DataFrame with replaced species synonyms.
+        """
         output = self.execute_query(query.unique_species_without_synonyms_query)
         uri_label_dict = {}
         # first element is column labels, so ignore
@@ -98,10 +166,24 @@ class SckanCompare(object):
         return df
 
     def replace_region_synonyms(self, df):
-        # function to replace region synonyms with unique label
-        # e.g. 'ovary' :  http://purl.obolibrary.org/obo/UBERON_0000992
-        # has several synonyms, such as 'animal ovary', 'female gonad', etc
-        # this function is used to map these synonyms to the parent label
+        """
+        Replace region synonyms in a DataFrame with unique labels.
+
+        e.g. 'ovary' :  http://purl.obolibrary.org/obo/UBERON_0000992
+        has several synonyms, such as 'animal ovary', 'female gonad', etc.
+        This method is used to map these synonyms to the parent label.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            The DataFrame containing region information.
+
+        Returns
+        -------
+        pandas.DataFrame
+            The DataFrame with replaced region synonyms.
+        """
+
         output = self.execute_query(query.combined_regions_all_species_without_synonyms_query)
         uri_label_dict = {}
         # first element is column labels, so ignore
@@ -125,6 +207,21 @@ class SckanCompare(object):
         return df
 
     def get_filtered_dataframe(self, result):
+        """
+        Create a filtered DataFrame from a query result.
+        Replaces all synonyms for species and regions with unique labels,
+        followed by the deletion of duplicate rows.
+
+        Parameters
+        ----------
+        result : list
+            The query result.
+
+        Returns
+        -------
+        pandas.DataFrame
+            The filtered DataFrame.
+        """
         # convert data to pandas dataframe with column names
         df_result = utils.get_dataframe(result)
 
@@ -140,6 +237,19 @@ class SckanCompare(object):
         return df_result
 
     def load_json_species_map(self, species=None):
+        """
+        Load a JSON species map for visualization.
+
+        Parameters
+        ----------
+        species : str, optional
+            The species for which to load the map.
+
+        Raises
+        ------
+        ValueError
+            If an invalid species is specified.
+        """
         if not species:
             raise ValueError("species needs to be specified!")
         if species not in self.valid_species:
@@ -159,6 +269,27 @@ class SckanCompare(object):
                 int(item["X"]), int(item["Y"])]
 
     def add_connection(self, vis_obj, region_A=None, region_B=None, region_C=None, neuron=None):
+        """
+        Add a connection to a visualization object.
+
+        Parameters
+        ----------
+        vis_obj : Visualizer
+            The visualization object.
+        region_A : str, optional
+            The source region of the connection.
+        region_B : str, optional
+            The target region of the connection.
+        region_C : str, optional
+            An intermediate region for connections.
+        neuron : str, optional
+            The associated neuron.
+
+        Raises
+        ------
+        ValueError
+            If required parameters are missing.
+        """
         if not region_A:
             raise ValueError("region_A needs to be specified!")
         if not region_B:
@@ -172,6 +303,27 @@ class SckanCompare(object):
             vis_obj.draw_edge_AB(region_A, region_B, neuron)
 
     def plot_dataframe_connectivity(self, df, species=None, region_A=None, region_B=None, region_C=None):
+        """
+        Plot anatomical connectivity map based on a DataFrame.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            The DataFrame containing connectivity information.
+        species : str, optional
+            The species for visualization.
+        region_A : str, optional
+            The source region for filtering.
+        region_B : str, optional
+            The target region for filtering.
+        region_C : str, optional
+            The intermediate region for filtering.
+
+        Returns
+        -------
+        Visualizer
+            The visualization object.
+        """
         # load the species specific visual map
         self.load_json_species_map(species)
 
