@@ -1,9 +1,78 @@
+"""
+Anatomical visualization for SckanCompare package.
+
+License: Apache License 2.0
+"""
+
 import numpy as np
 import plotly.graph_objects as go
 
+
 class Visualizer(object):
+    """
+    A class for creating interactive brain region visualizations using Plotly.
+
+    Parameters
+    ----------
+    region_dict : dict
+        Dictionary mapping region names to (x, y) coordinates.
+    species : str
+        The species for which the visualization is being created.
+
+    Attributes
+    ----------
+    region_dict : dict
+        Dictionary mapping region names to (x, y) coordinates.
+    species : str
+        The species for which the visualization is being created.
+    SCALE : int
+        Scaling factor for the visualization.
+    MAX_X : int
+        Maximum X coordinate.
+    MAX_Y : int
+        Maximum Y coordinate.
+    NODE_RADIUS : float
+        Radius of the node markers.
+    fig : go.FigureWidget
+        Plotly figure widget for visualization.
+
+    Methods
+    -------
+    __init__(region_dict, species):
+        Initialize the Visualizer class.
+    draw_rect(start_x, start_y, width=1, height=1, color_border="#4051BF", color_fill="#C5CAE9", tooltiptext="<set name>"):
+        Draw a rectangular region on the visualization.
+    draw_poly(xlist, ylist, color_border="#4051BF", color_fill="#C5CAE9", tooltiptext="<set name>"):
+        Draw a polygonal region on the visualization.
+    draw_background_human():
+        Draw the default background for human species.
+    draw_background_mouse_rat():
+        Draw the default background for mouse and rat species.
+    mark_node(region, color_border="#FF0000", color_fill="#FFFF00", small=False):
+        Mark a node (brain region) on the visualization.
+    interpolate_coordinates(point1, point2, resolution=0.1):
+        Interpolate between two cartesian coordinates using NumPy.
+    draw_edge_AB(region1, region2, neuron=None):
+        Draw an edge (connection) between two nodes (regions) A and B.
+    draw_edge_ABC(region1, region2, region3, neuron=None):
+        Draw an edge (connection) between nodes (regions) A and B via C.
+    show_figure():
+        Display the Plotly figure widget.
+    get_figure():
+        Get the Plotly figure widget.
+    """
 
     def __init__(self, region_dict, species):
+        """
+        Initialize the Visualizer class.
+
+        Parameters
+        ----------
+        region_dict : dict
+            Dictionary mapping region names to (x, y) coordinates.
+        species : str
+            The species for which the visualization is being created.
+        """
         self.region_dict = region_dict
         self.species = species
 
@@ -40,6 +109,26 @@ class Visualizer(object):
                 color_border="#4051BF",
                 color_fill="#C5CAE9",
                 tooltiptext="<set name>"):
+        """
+        Draw a rectangular region on the visualization.
+
+        Parameters
+        ----------
+        start_x : float
+            X coordinate of the starting point.
+        start_y : float
+            Y coordinate of the starting point.
+        width : float, optional
+            Width of the rectangle.
+        height : float, optional
+            Height of the rectangle.
+        color_border : str, optional
+            Border color of the rectangle.
+        color_fill : str, optional
+            Fill color of the rectangle.
+        tooltiptext : str, optional
+            Tooltip text for the rectangle.
+        """
         self.fig.add_trace(go.Scatter(
             x=[start_x,start_x+width,start_x+width,start_x, start_x],
             y=[start_y,start_y,start_y+height,start_y+height, start_y],
@@ -59,6 +148,22 @@ class Visualizer(object):
                 color_border="#4051BF",
                 color_fill="#C5CAE9",
                 tooltiptext="<set name>"):
+        """
+        Draw a polygonal region on the visualization.
+
+        Parameters
+        ----------
+        xlist : list
+            List of X coordinates for polygon vertices.
+        ylist : list
+            List of Y coordinates for polygon vertices.
+        color_border : str, optional
+            Border color of the polygon.
+        color_fill : str, optional
+            Fill color of the polygon.
+        tooltiptext : str, optional
+            Tooltip text for the polygon.
+        """
         self.fig.add_trace(go.Scatter(
             x=xlist,
             y=ylist,
@@ -73,6 +178,9 @@ class Visualizer(object):
         ))
 
     def draw_background_human(self):
+        """
+        Draw the default background for human species.
+        """
         self.draw_rect(1, 3, 4, 4, "#4051BF", "#C5CAE9")
         self.draw_rect(5, 3, 1, 4, "#4051BF", "#C5CAE9")
         self.draw_rect(6, 5, 2, 1, "#4051BF", "#C5CAE9")
@@ -106,6 +214,9 @@ class Visualizer(object):
         self.draw_rect(35, 17, 6, 2, "#4051BF", "#C5CAE9")
 
     def draw_background_mouse_rat(self):
+        """
+        Draw the default background for mouse and rat species.
+        """
         self.draw_rect(24, 2, 1, 1, "#4051BF", "#C5CAE9")
         self.draw_rect(26, 2, 1, 1, "#4051BF", "#C5CAE9")
         self.draw_rect(1, 3, 4, 4, "#4051BF", "#C5CAE9")
@@ -148,6 +259,20 @@ class Visualizer(object):
                   color_border="#FF0000",
                   color_fill="#FFFF00",
                   small=False):
+        """
+        Mark a node (brain region) on the visualization.
+
+        Parameters
+        ----------
+        region : str
+            Name of the region to mark.
+        color_border : str, optional
+            Border color of the marker.
+        color_fill : str, optional
+            Fill color of the marker.
+        small : bool, optional
+            Whether to use a smaller marker.
+        """
         x = self.region_dict[region][0] + 0.5
         y = self.region_dict[region][1] + 0.5
         size_factor = 7 if small else 5
@@ -172,15 +297,21 @@ class Visualizer(object):
 
     def interpolate_coordinates(self, point1, point2, resolution=0.1):
         """
-        Interpolate between two cartesian coordinates with a given resolution using NumPy.
-        
-        Parameters:
-            point1 (tuple): First cartesian coordinate (x1, y1).
-            point2 (tuple): Second cartesian coordinate (x2, y2).
-            resolution (float): Interpolation resolution.
-            
-        Returns:
-            tuple: Two lists of interpolated x and y coordinates.
+        Interpolate between two cartesian coordinates using NumPy.
+
+        Parameters
+        ----------
+        point1 : tuple
+            First cartesian coordinate (x1, y1).
+        point2 : tuple
+            Second cartesian coordinate (x2, y2).
+        resolution : float, optional
+            Interpolation resolution.
+
+        Returns
+        -------
+        tuple
+            Two lists of interpolated x and y coordinates.
         """
         x1, y1 = point1
         x2, y2 = point2
@@ -197,6 +328,18 @@ class Visualizer(object):
                      region1,
                      region2,
                      neuron=None):
+        """
+        Draw an edge (connection) between two nodes (regions) A and B.
+
+        Parameters
+        ----------
+        region1 : str
+            Name of the starting region (A).
+        region2 : str
+            Name of the ending region (B).
+        neuron : str, optional
+            Name of the associated neuron.
+        """
         # From A to B
         default_linewidth = 2
         x1, y1 = self.region_dict[region1]
@@ -237,6 +380,20 @@ class Visualizer(object):
                       region2,
                       region3,
                       neuron=None):
+        """
+        Draw an edge (connection) between nodes (regions) A and B via C.
+
+        Parameters
+        ----------
+        region1 : str
+            Name of the starting region (A).
+        region2 : str
+            Name of the ending region (B).
+        region3 : str
+            Name of the intermediate region (C).
+        neuron : str, optional
+            Name of the associated neuron.
+        """
         # From A to B via C
         default_linewidth = 2
         x1, y1 = self.region_dict[region1]
@@ -293,7 +450,18 @@ class Visualizer(object):
         ))
 
     def show_figure(self):
+        """
+        Display the Plotly figure widget.
+        """
         self.fig.show(config= {'displaylogo': False})
 
     def get_figure(self):
+        """
+        Get the Plotly figure widget.
+
+        Returns
+        -------
+        go.FigureWidget
+            The Plotly figure widget.
+        """
         return self.fig
