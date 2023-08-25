@@ -16,7 +16,7 @@ api_cache.*
 dist
 build
 .eggs/
-docs/_build/
+docs/_build
 docs/reference
 output/
 
