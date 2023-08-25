@@ -46,6 +46,18 @@ output/
 *.swp
 .rope*
 
+# Python files
+build
+dist
+MANIFEST
+doc/_build
+# Egg metadata
+*.egg-info
+*.egg
+*.EGG
+*.EGG-INFO
+*.pkl
+
 # IPython
 .ipynb_checkpoints
 
