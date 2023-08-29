@@ -8,7 +8,7 @@ import numpy as np
 import plotly.graph_objects as go
 
 
-class Visualizer(object):
+class AntomyVis(object):
     """
     A class for creating interactive brain region visualizations using Plotly.
 

@@ -15,7 +15,7 @@ from . import globals
 from . import query
 from . import utils
 from .cachemanager import CacheManager
-from .visualize import Visualizer
+from .anatomyvis import AntomyVis
 
 
 class SckanCompare(object):
@@ -302,7 +302,7 @@ class SckanCompare(object):
 
         Parameters
         ----------
-        vis_obj : Visualizer
+        vis_obj : AntomyVis
             The visualization object.
         region_A : str, optional
             The source region of the connection.
@@ -349,14 +349,14 @@ class SckanCompare(object):
 
         Returns
         -------
-        Visualizer
+        AntomyVis
             The visualization object.
         """
         # load the species specific visual map
         self.load_json_species_map(species)
 
-        # create visualizer object
-        vis = Visualizer(self.anatomy_map_dict[species], species)
+        # create AntomyVis object
+        vis = AntomyVis(self.anatomy_map_dict[species], species)
         
         # add all connections specified in dataframe
         for idx in range(df.shape[0]):
