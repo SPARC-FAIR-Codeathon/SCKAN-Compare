@@ -17,6 +17,13 @@ AVAILABLE_SPECIES_MAPS = {
     "Homo sapiens": "coords_human.json",
 }
 
+# Anatomy maps for species to draw background blocks
+AVAILABLE_SPECIES_ANATOMY = {
+    "Mus musculus": "anatomy_map_mouse_rat.json",
+    "Rattus norvegicus": "anatomy_map_mouse_rat.json",
+    "Homo sapiens": "anatomy_map_human.json",
+}
+
 # Manual workaround for duplicate species
 # TODO: Discuss with SPARC team
 DUPLICATE_SPECIES_RESOLVER = {
