@@ -45,6 +45,8 @@ class AntomyVis(object):
     -------
     __init__(region_dict, species):
         Initialize the AntomyVis class.
+    get_json_species_map(species=None):
+        Load a JSON species mapping of region names to (x, y) coordinates for anatomical visualization.
     draw_rect(start_x, start_y, width=1, height=1, color_border="#4051BF", color_fill="#C5CAE9", tooltiptext="<set name>"):
         Draw a rectangular region on the visualization.
     draw_poly(xlist, ylist, color_border="#4051BF", color_fill="#C5CAE9", tooltiptext="<set name>"):
@@ -55,6 +57,8 @@ class AntomyVis(object):
         Mark a node (brain region) on the visualization.
     interpolate_coordinates(point1, point2, resolution=0.1):
         Interpolate between two cartesian coordinates using NumPy.
+    plot_dataframe(df):
+        Plot dataframe connectivity info.
     draw_edge_AB(region1, region2, neuron=None):
         Draw an edge (connection) between two nodes (regions) A and B.
     draw_edge_ABC(region1, region2, region3, neuron=None):
@@ -65,14 +69,12 @@ class AntomyVis(object):
         Get the Plotly figure widget.
     """
 
-    def __init__(self, region_dict, species):
+    def __init__(self, species):
         """
         Initialize the AntomyVis class.
 
         Parameters
         ----------
-        region_dict : dict
-            Dictionary mapping region names to (x, y) coordinates.
         species : str
             The species for which the visualization is being created.
         """
@@ -81,8 +83,9 @@ class AntomyVis(object):
         if species not in globals.AVAILABLE_SPECIES_MAPS.keys():
             raise ValueError("Not currently implemented for species = {}!".format(species))
         
-        self.region_dict = region_dict
         self.species = species
+        # get the species specific visual region mapping (X,Y)
+        self.region_dict = self.get_json_species_map(species)
 
         self.SCALE = 50
         self.MAX_X = 43
@@ -100,7 +103,42 @@ class AntomyVis(object):
         self.fig.update_xaxes(range = [0, self.MAX_X])
         self.fig.update_layout(height=int(500))
 
+        # draw the anatomical background corresponding to the species
         self.draw_background(species)
+
+    def get_json_species_map(self, species=None):
+        """
+        Load a JSON species mapping of region names to (x, y) coordinates for anatomical visualization.
+
+        Parameters
+        ----------
+        species : str, optional
+            The species for which to load the map.
+
+        Returns
+        -------
+        dict
+            Dict with mapping of regions to their X,Y anatomical mapping.
+
+        Raises
+        ------
+        ValueError
+            If an invalid species is specified.
+        """
+        if not species:
+            raise ValueError("species needs to be specified!")
+        if species not in globals.AVAILABLE_SPECIES_MAPS.keys():
+            raise ValueError("{} visual map not currently available!".format(species))
+        
+        datapath = pkg_resources.resource_filename("sckan_compare", "data")
+        filepath = os.path.join(datapath, globals.AVAILABLE_SPECIES_MAPS[species])
+        with open(filepath, encoding='utf-8-sig') as json_file:
+            data = json.load(json_file)
+
+        region_dict = {}
+        for item in data:
+            region_dict[item["Name"]] = [int(item["X"]), int(item["Y"])]
+        return region_dict
 
     def draw_rect(self,
                 start_x,
@@ -262,6 +300,58 @@ class AntomyVis(object):
         interpolated_y = y1 + (y2 - y1) * t
         
         return list(interpolated_x), list(interpolated_y)
+
+    def plot_dataframe(self, df):
+        """
+        Plot dataframe connectivity info.
+        
+        Parameters
+        ----------
+        df : pd.DataFrame
+            Dataframe containing the required data.
+        """
+        for idx in range(df.shape[0]):
+            if 'Region_C' in df.columns:
+                self.add_connection(region_A=df.iloc[idx,3],
+                                        region_B=df.iloc[idx,5],
+                                        region_C=df.iloc[idx,7],
+                                        neuron=df.iloc[idx,1])
+            else:
+                self.add_connection(region_A=df.iloc[idx,3],
+                                        region_B=df.iloc[idx,5],
+                                        neuron=df.iloc[idx,1])
+
+    def add_connection(self, region_A=None, region_B=None, region_C=None, neuron=None):
+        """
+        Add a connection to a visualization object.
+
+        Parameters
+        ----------
+        region_A : str, optional
+            The source region of the connection.
+        region_B : str, optional
+            The target region of the connection.
+        region_C : str, optional
+            An intermediate region for connections.
+        neuron : str, optional
+            The associated neuron.
+
+        Raises
+        ------
+        ValueError
+            If required parameters are missing.
+        """
+        if not region_A:
+            raise ValueError("region_A needs to be specified!")
+        if not region_B:
+            raise ValueError("region_B needs to be specified!")
+
+        if region_C:
+            # A->C->B
+            self.draw_edge_ABC(region_A, region_B, region_C, neuron)
+        else:
+            # A->B
+            self.draw_edge_AB(region_A, region_B, neuron)
 
     def draw_edge_AB(self,
                      region1,
