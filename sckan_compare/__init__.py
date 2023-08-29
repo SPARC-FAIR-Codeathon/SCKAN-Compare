@@ -83,7 +83,7 @@ class SckanCompare(object):
         temp_regions = self.execute_query(query.combined_regions_specify_species_without_synonyms_query, species)
         return [item[0] for item in temp_regions]
 
-    def execute_query(self, query_string, species=None, cached=False):
+    def execute_query(self, query_string, species=None, cached=True):
         """
         Execute a SPARQL query and return the result.
 
