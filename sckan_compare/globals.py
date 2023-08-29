@@ -29,5 +29,6 @@ DUPLICATE_SPECIES_RESOLVER = {
     "rats": "Rattus norvegicus",
     "mouse": "Mus musculus",
     "house mouse": "Mus musculus",
+    "vertebrates": "Vertebrata",
     "Vertebrata <vertebrates>": "Vertebrata",
 }
