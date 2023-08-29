@@ -11,7 +11,7 @@ import plotly.graph_objects as go
 from PIL import Image
 
 
-class SimpleVisualizer(object):
+class BlockVis(object):
     """
     A class for creating block visualizations using Plotly.
 
@@ -35,7 +35,7 @@ class SimpleVisualizer(object):
     Methods
     -------
     __init__():
-        Initialize the SimpleVisualizer class.
+        Initialize the BlockVis class.
     interpolate_coordinates(point1, point2, resolution=0.1):
         Interpolate between two cartesian coordinates.
     plot_figure(df, region_A, region_B):
@@ -57,7 +57,7 @@ class SimpleVisualizer(object):
 
     def __init__(self):
         """
-        Initialize the SimpleVisualizer class.
+        Initialize the BlockVis class.
         """
         self.SCALE = 150
         self.MAX_Y = 900
