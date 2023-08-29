@@ -156,7 +156,7 @@ class SckanCompare(object):
         pandas.DataFrame
             The DataFrame with replaced species synonyms.
         """
-        output = self.execute_query(query.unique_species_without_synonyms_query)
+        output = self.execute_query(query.species_without_synonyms_query)
         uri_label_dict = {}
         # first element is column labels, so ignore
         for item in output[1:]:
