@@ -21,7 +21,7 @@ def sparql_query(query, *, endpoint, **kwargs):
     return list(csv.reader(io.StringIO(resp.text)))
 
 
-example_query_specific_specie = """
+example_query_specify_species = """
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
