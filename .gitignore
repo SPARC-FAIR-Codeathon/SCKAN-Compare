@@ -16,7 +16,7 @@ api_cache.*
 dist
 build
 .eggs/
-docs/_build
+docs/_build/*
 docs/reference
 output/
 
@@ -49,7 +49,7 @@ output/
 build
 dist
 MANIFEST
-doc/_build
+
 # Egg metadata
 *.egg-info
 *.egg
