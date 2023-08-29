@@ -5,6 +5,7 @@ License: Apache License 2.0
 """
 
 import pandas as pd
+from . import globals
 
 
 def get_dataframe(data_as_list):
@@ -44,17 +45,8 @@ def remove_duplicate_species(df):
     pandas.DataFrame
         The DataFrame with replaced species synonyms.
     """
-    df = df.replace('Mammalia', 'Mammal')
-    df = df.replace('mammals', 'Mammal')
-    df = df.replace('Vertebrata <vertebrates>', 'Vertebrata')
-    df = df.replace('vertebrates', 'Vertebrata')
-    df = df.replace('human', 'Homo sapiens')
-    df = df.replace('Norway rat', 'Rattus norvegicus')
-    df = df.replace('brown rat', 'Rattus norvegicus')
-    df = df.replace('rat', 'Rattus norvegicus')
-    df = df.replace('rats', 'Rattus norvegicus')
-    df = df.replace('mouse', 'Mus musculus')
-    df = df.replace('house mouse', 'Mus musculus')
+    for item in globals.DUPLICATE_SPECIES_RESOLVER:
+        df = df.replace(item, globals.DUPLICATE_SPECIES_RESOLVER[item])
     return df
 
 
