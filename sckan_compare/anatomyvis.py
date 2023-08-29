@@ -4,8 +4,13 @@ Anatomical visualization for SckanCompare package.
 License: Apache License 2.0
 """
 
+import os
+import json
+import pkg_resources
 import numpy as np
 import plotly.graph_objects as go
+
+from . import globals
 
 
 class AntomyVis(object):
@@ -39,15 +44,13 @@ class AntomyVis(object):
     Methods
     -------
     __init__(region_dict, species):
-        Initialize the Visualizer class.
+        Initialize the AntomyVis class.
     draw_rect(start_x, start_y, width=1, height=1, color_border="#4051BF", color_fill="#C5CAE9", tooltiptext="<set name>"):
         Draw a rectangular region on the visualization.
     draw_poly(xlist, ylist, color_border="#4051BF", color_fill="#C5CAE9", tooltiptext="<set name>"):
         Draw a polygonal region on the visualization.
-    draw_background_human():
-        Draw the default background for human species.
-    draw_background_mouse_rat():
-        Draw the default background for mouse and rat species.
+    draw_background():
+        Draw the anatomical background for species.
     mark_node(region, color_border="#FF0000", color_fill="#FFFF00", small=False):
         Mark a node (brain region) on the visualization.
     interpolate_coordinates(point1, point2, resolution=0.1):
@@ -64,7 +67,7 @@ class AntomyVis(object):
 
     def __init__(self, region_dict, species):
         """
-        Initialize the Visualizer class.
+        Initialize the AntomyVis class.
 
         Parameters
         ----------
@@ -73,6 +76,11 @@ class AntomyVis(object):
         species : str
             The species for which the visualization is being created.
         """
+        if not species:
+            raise ValueError("species needs to be specified!")
+        if species not in globals.AVAILABLE_SPECIES_MAPS.keys():
+            raise ValueError("Not currently implemented for species = {}!".format(species))
+        
         self.region_dict = region_dict
         self.species = species
 
@@ -88,18 +96,11 @@ class AntomyVis(object):
         self.fig.update_xaxes(showgrid=False, zeroline=False, visible=False, showticklabels=False)
         self.fig.update_yaxes(showgrid=False, zeroline=False, visible=False, showticklabels=False)
         self.fig.update_layout(showlegend=False)
-        # # self.fig.update_yaxes(
-        # #     scaleanchor="x", scaleratio=1)
         self.fig.update_yaxes(range = [self.MAX_Y+3, 0])
         self.fig.update_xaxes(range = [0, self.MAX_X])
         self.fig.update_layout(height=int(500))
 
-        if (self.species == "Mus musculus") or (self.species == "Rattus norvegicus"):
-            self.draw_background_mouse_rat()
-        else:
-            # default
-            self.draw_background_human()
-
+        self.draw_background(species)
 
     def draw_rect(self,
                 start_x,
@@ -177,83 +178,21 @@ class AntomyVis(object):
             showlegend=False
         ))
 
-    def draw_background_human(self):
+    def draw_background(self, species):
         """
-        Draw the default background for human species.
+        Draw the anatomical background for species.
         """
-        self.draw_rect(1, 3, 4, 4, "#4051BF", "#C5CAE9")
-        self.draw_rect(5, 3, 1, 4, "#4051BF", "#C5CAE9")
-        self.draw_rect(6, 5, 2, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(7, 4, 2, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(8, 5, 2, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(10, 2, 31, 1, "#4051BF", "#C5CAE9")        
-        self.draw_rect(10, 3, 8, 2, "#4051BF", "#C5CAE9")
-        self.draw_rect(18, 3, 12, 2, "#4051BF", "#C5CAE9")
-        self.draw_rect(30, 3, 5, 2, "#4051BF", "#C5CAE9")
-        self.draw_rect(35, 3, 5, 2, "#4051BF", "#C5CAE9")
-        self.draw_rect(40, 3, 1, 2, "#4051BF", "#C5CAE9")
-        self.draw_rect(10, 5, 31, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(10, 6, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(13, 6, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(17, 6, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(18, 6, 23, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(10, 7, 3, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(35, 7, 3, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(16, 8, 2, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(19, 8, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_poly([6,8,8,7,7,6,6], [9,9,11,11,10,10,9], "#4051BF", "#C5CAE9")
-        self.draw_rect(18, 9, 3, 2, "#4051BF", "#C5CAE9")
-        self.draw_rect(21, 9, 2, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(29, 13, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(18, 11, 10, 2, "#4051BF", "#C5CAE9")
-        self.draw_rect(29, 11, 12, 2, "#4051BF", "#C5CAE9")
-        self.draw_rect(22, 13, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(18, 14, 23, 2, "#4051BF", "#C5CAE9")
-        self.draw_rect(37, 16, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(40, 16, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(35, 17, 6, 2, "#4051BF", "#C5CAE9")
+        datapath = pkg_resources.resource_filename("sckan_compare", "data")
+        filepath = os.path.join(datapath, globals.AVAILABLE_SPECIES_ANATOMY[species])
+        with open(filepath, encoding='utf-8-sig') as json_file:
+            data = json.load(json_file)
 
-    def draw_background_mouse_rat(self):
-        """
-        Draw the default background for mouse and rat species.
-        """
-        self.draw_rect(24, 2, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(26, 2, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(1, 3, 4, 4, "#4051BF", "#C5CAE9")
-        self.draw_rect(5, 3, 1, 4, "#4051BF", "#C5CAE9")
-        self.draw_rect(6, 5, 2, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(7, 4, 2, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(8, 5, 2, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(10, 3, 8, 2, "#4051BF", "#C5CAE9")
-        self.draw_rect(18, 3, 13, 2, "#4051BF", "#C5CAE9")
-        self.draw_rect(31, 3, 6, 2, "#4051BF", "#C5CAE9")
-        self.draw_rect(37, 3, 4, 2, "#4051BF", "#C5CAE9")
-        self.draw_rect(41, 3, 1, 2, "#4051BF", "#C5CAE9")
-        self.draw_rect(10, 5, 31, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(10, 6, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(13, 6, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(17, 6, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(18, 6, 23, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(10, 7, 3, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(35, 7, 3, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(6, 8, 2, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(15, 8, 2, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(19, 8, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_poly([6,8,8,7,7,6,6], [9,9,11,11,10,10,9], "#4051BF", "#C5CAE9")
-        self.draw_rect(18, 9, 3, 2, "#4051BF", "#C5CAE9")
-        self.draw_rect(21, 9, 2, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(29, 13, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(40, 10, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(18, 11, 10, 2, "#4051BF", "#C5CAE9")
-        self.draw_rect(29, 11, 12, 2, "#4051BF", "#C5CAE9")
-        self.draw_rect(22, 13, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(24, 13, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(18, 14, 23, 2, "#4051BF", "#C5CAE9")
-        self.draw_rect(37, 16, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(40, 16, 1, 1, "#4051BF", "#C5CAE9")
-        self.draw_rect(35, 17, 6, 2, "#4051BF", "#C5CAE9")
-
-
+        for item in data:
+            if isinstance(item[0], int):
+                self.draw_rect(*item)
+            else:
+                self.draw_poly(*item)
+        
     def mark_node(self,
                   region,
                   color_border="#FF0000",
