@@ -40,9 +40,9 @@ class SckanCompare(object):
         self.cache_manager = CacheManager(os.path.join(
             os.path.dirname(__file__), 'api_cache'), max_cache_days)
         
-        self.valid_species = self.get_valid_species()
+        self.valid_species_list = self.get_valid_species_list()
 
-    def get_valid_species(self):
+    def get_valid_species_list(self):
         """
         Retrieve a list of valid species from the data source.
 
@@ -52,7 +52,16 @@ class SckanCompare(object):
             List of valid species.
         """
         temp_species = self.execute_query(query.species_without_synonyms_query)
-        return [item[1] for item in temp_species[1:]]
+        # Note: query returns some synonyms for certain entries
+        # TODO: Discuss with SPARC team why this is so
+        # Temporary solution: additional manual mapping
+        species_list = []
+        for item in temp_species[1:]:
+            if item[1] in globals.DUPLICATE_SPECIES_RESOLVER.keys():
+                species_list.append(globals.DUPLICATE_SPECIES_RESOLVER[item[1]])
+            else:
+                species_list.append(item[1])
+        return sorted(list(set(species_list)))
     
     def get_valid_regions_all_species(self):
         """
@@ -105,7 +114,7 @@ class SckanCompare(object):
         if "{species_param}" in query_string:
             if not species:
                 raise ValueError("species needs to be specified!")
-            if species not in self.valid_species:
+            if species not in self.valid_species_list:
                 raise ValueError("Invalid species specified!")
             query_with_species = query_string.format(species_param=species)
         else:
@@ -129,7 +138,7 @@ class SckanCompare(object):
         self.cache_manager.cache_data(query_with_species + self.endpoint, data)
         return data
     
-    def replace_species_synonyms(self, df):
+    def replace_species_synonyms_dataframe(self, df):
         """
         Replace species synonyms in a DataFrame with unique labels.
 
@@ -165,7 +174,7 @@ class SckanCompare(object):
             df['Species'] = df['Species_link'].map(uri_label_dict)
         return df
 
-    def replace_region_synonyms(self, df):
+    def replace_region_synonyms_dataframe(self, df):
         """
         Replace region synonyms in a DataFrame with unique labels.
 
@@ -188,14 +197,13 @@ class SckanCompare(object):
         uri_label_dict = {}
         # first element is column labels, so ignore
         for item in output[1:]:
-            if item[0] in uri_label_dict:
-                # Note: query returns some synonyms for certain entries
-                # TODO: Discuss with SPARC team why this is so
-                # Temporary solution:
-                # -> Handling this now by picking shortest label
-                if len(item[1]) >= len(uri_label_dict[item[0]]):
-                    continue
-            uri_label_dict[item[0]] = item[1]
+            # Note: query returns some synonyms for certain entries
+            # TODO: Discuss with SPARC team why this is so
+            # Temporary solution: additional manual mapping
+            if item[1] in globals.DUPLICATE_SPECIES_RESOLVER.keys():
+                uri_label_dict[item[0]] = globals.DUPLICATE_SPECIES_RESOLVER[item[1]]
+            else:
+                uri_label_dict[item[0]] = item[1]
 
         # update values in dataframe
         if 'Region_A' in df.columns:

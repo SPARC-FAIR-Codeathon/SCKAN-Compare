@@ -16,3 +16,18 @@ AVAILABLE_SPECIES_MAPS = {
     "Rattus norvegicus": "coords_rat.json",
     "Homo sapiens": "coords_human.json",
 }
+
+# Manual workaround for duplicate species
+# TODO: Discuss with SPARC team
+DUPLICATE_SPECIES_RESOLVER = {
+    "Mammalia": "Mammal",
+    "mammals": "Mammal",
+    "human": "Home sapiens",
+    "Norway rat": "Rattus norvegicus",
+    "brown rat": "Rattus norvegicus",
+    "rat": "Rattus norvegicus",
+    "rats": "Rattus norvegicus",
+    "mouse": "Mus musculus",
+    "house mouse": "Mus musculus",
+    "Vertebrata <vertebrates>": "Vertebrata",
+}
