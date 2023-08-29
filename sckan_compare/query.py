@@ -21,7 +21,7 @@ def sparql_query(query, *, endpoint, **kwargs):
     return list(csv.reader(io.StringIO(resp.text)))
 
 
-example_query = """
+example_query_specific_specie = """
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -45,6 +45,32 @@ SELECT DISTINCT ?Neuron_IRI ?Neuron_Label ?A ?Region_A ?B ?Region_B ?C ?Region_C
     ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
 
     FILTER (str(?Species) = "{species_param}")
+}}
+ORDER BY ?Neuron_IRI ?Region_A ?Region_B ?Region_C ?Species
+"""
+
+example_query_all_species = """
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX partOf: <http://purl.obolibrary.org/obo/BFO_0000050>
+PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#> 
+
+SELECT DISTINCT ?Neuron_IRI ?Neuron_Label ?A ?Region_A ?B ?Region_B ?C ?Region_C ?Species ?Species_link
+{{
+
+    ?Neuron_IRI rdfs:label ?Neuron_Label;
+                ilxtr:hasSomaLocation ?A;
+                ilxtr:hasAxonLocation ?C;
+                (ilxtr:hasAxonTerminalLocation | ilxtr:hasAxonSensoryLocation) ?B. 
+
+    ?Neuron_IRI ilxtr:isObservedInSpecies ?Species_link.
+
+    ?A (rdfs:label | oboInOwl:hasExactSynonym) ?Region_A.
+    ?B (rdfs:label | oboInOwl:hasExactSynonym) ?Region_B.
+    ?C (rdfs:label | oboInOwl:hasExactSynonym) ?Region_C.
+    ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
 }}
 ORDER BY ?Neuron_IRI ?Region_A ?Region_B ?Region_C ?Species
 """
