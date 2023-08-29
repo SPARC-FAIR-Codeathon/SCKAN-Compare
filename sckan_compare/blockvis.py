@@ -39,7 +39,7 @@ class BlockVis(object):
     interpolate_coordinates(point1, point2, resolution=0.1):
         Interpolate between two cartesian coordinates.
     plot_figure(df, region_A, region_B):
-        Plot the visualization.
+        Plot the connectivity block visualization
     update_graph():
         Update the layout of the figure.
     draw_block_bg(x0, y0, x1, y1, opacity, color):
@@ -52,6 +52,10 @@ class BlockVis(object):
         Add text annotation to the visualization.
     mark_node(x, y, label):
         Mark a node on the visualization.
+    show_figure():
+        Display the Plotly figure widget.
+    get_figure():
+        Get the Plotly figure widget.
     """
 
 
@@ -107,7 +111,7 @@ class BlockVis(object):
 
     def plot_figure(self, df, region_A, region_B):
         """
-        Plot the block visualization.
+        Plot the connectivity block visualization.
 
         Parameters
         ----------
@@ -117,11 +121,6 @@ class BlockVis(object):
             Name of region A.
         region_B : str
             Name of region B.
-
-        Returns
-        -------
-        go.FigureWidget
-            The Plotly figure widget.
         """
         req_df = df[(df.Region_A == region_A) & (df.Region_B == region_B)]
         list_region_C = req_df.Region_C.unique()
@@ -211,8 +210,6 @@ class BlockVis(object):
                 label=req_df.iloc[i,1],
                 color="#FF0000"
             )
-            
-        return self.fig
 
     def update_graph(self):
         """
@@ -225,7 +222,6 @@ class BlockVis(object):
         self.fig.update_layout(height=int(500))
         self.fig.update_layout(template="plotly_white")
         self.fig.update_layout(showlegend=False)
-
 
     def draw_block_bg(self, x0, y0, x1, y1, opacity, color):
         """
@@ -367,3 +363,20 @@ class BlockVis(object):
             hoverinfo="text",
             name=label,
         ))
+
+    def show_figure(self):
+        """
+        Display the Plotly figure widget.
+        """
+        self.fig.show(config= {'displaylogo': False})
+
+    def get_figure(self):
+        """
+        Get the Plotly figure widget.
+
+        Returns
+        -------
+        go.FigureWidget
+            The Plotly figure widget.
+        """
+        return self.fig
