@@ -4,6 +4,23 @@ SPARQL queries for SckanCompare package.
 License: Apache License 2.0
 """
 
+import io
+import csv
+import requests
+from urllib.parse import quote as url_quote
+
+def procq(res):
+    _, (str_count,) = res
+    return int(str_count)
+
+def sparql_query(query, *, endpoint, **kwargs):
+    qq = url_quote(query, safe='')
+    url = f'{endpoint}?query={qq}'
+    headers = {'Accept': 'text/csv'}
+    resp = requests.get(url, headers=headers)
+    return list(csv.reader(io.StringIO(resp.text)))
+
+
 example_query = """
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
