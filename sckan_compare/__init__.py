@@ -75,7 +75,7 @@ class SckanCompare(object):
         temp_regions = self.execute_query(query.combined_regions_all_species_without_synonyms_query)
         return [item[0] for item in temp_regions]
 
-    def get_valid_regions_for_species(self, species):
+    def get_valid_regions_specify_species(self, species):
         """
         Retrieve a list of valid regions for a specific species from the data source.
 
@@ -89,6 +89,10 @@ class SckanCompare(object):
         list
             List of valid regions for the specified species.
         """
+        if not species:
+            raise ValueError("species needs to be specified!")
+        if species not in self.valid_species_list:
+            raise ValueError("Invalid species specified!")
         temp_regions = self.execute_query(query.combined_regions_specify_species_without_synonyms_query, species)
         return [item[0] for item in temp_regions]
 
@@ -163,10 +167,11 @@ class SckanCompare(object):
             if item[0] in uri_label_dict:
                 # Note: query returns some synonyms for certain entries
                 # TODO: Discuss with SPARC team why this is so
-                # Temporary solution:
-                # -> Handling this now by picking shortest label
-                if len(item[1]) >= len(uri_label_dict[item[0]]):
-                    continue
+                # Temporary solution: additional manual mapping
+                if item[1] in globals.DUPLICATE_SPECIES_RESOLVER.keys():
+                    uri_label_dict[item[0]] = globals.DUPLICATE_SPECIES_RESOLVER[item[1]]
+                else:
+                    uri_label_dict[item[0]] = item[1]
             uri_label_dict[item[0]] = item[1]
         
         # update values in dataframe
@@ -197,13 +202,14 @@ class SckanCompare(object):
         uri_label_dict = {}
         # first element is column labels, so ignore
         for item in output[1:]:
-            # Note: query returns some synonyms for certain entries
-            # TODO: Discuss with SPARC team why this is so
-            # Temporary solution: additional manual mapping
-            if item[1] in globals.DUPLICATE_SPECIES_RESOLVER.keys():
-                uri_label_dict[item[0]] = globals.DUPLICATE_SPECIES_RESOLVER[item[1]]
-            else:
-                uri_label_dict[item[0]] = item[1]
+            if item[0] in uri_label_dict:
+                # Note: query returns some synonyms for certain entries
+                # TODO: Discuss with SPARC team why this is so
+                # Temporary solution:
+                # -> Handling this now by picking shortest label
+                if len(item[1]) >= len(uri_label_dict[item[0]]):
+                    continue
+            uri_label_dict[item[0]] = item[1]
 
         # update values in dataframe
         if 'Region_A' in df.columns:
