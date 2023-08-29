@@ -40,42 +40,30 @@ class SckanCompare(object):
         self.cache_manager = CacheManager(os.path.join(
             os.path.dirname(__file__), 'api_cache'), max_cache_days)
         
-        self.valid_species_list = self.get_valid_species_list()
+        self.valid_species_list = self.get_valid_species().values()
 
-    def get_valid_species_list(self):
+    def get_valid_species(self):
         """
         Retrieve a list of valid species from the data source.
 
         Returns
         -------
-        list
-            List of valid species.
+        dict
+            Dict with valid species URIs as keys and corresponding labels as values.
         """
         temp_species = self.execute_query(query.species_without_synonyms_query)
         # Note: query returns some synonyms for certain entries
         # TODO: Discuss with SPARC team why this is so
         # Temporary solution: additional manual mapping
-        species_list = []
+        temp_dict = {}
         for item in temp_species[1:]:
             if item[1] in globals.DUPLICATE_SPECIES_RESOLVER.keys():
-                species_list.append(globals.DUPLICATE_SPECIES_RESOLVER[item[1]])
+                temp_dict[item[0]] = globals.DUPLICATE_SPECIES_RESOLVER[item[1]]
             else:
-                species_list.append(item[1])
-        return sorted(list(set(species_list)))
-    
-    def get_valid_regions_all_species(self):
-        """
-        Retrieve a list of valid regions for all species from the data source.
+                temp_dict[item[0]] = item[1]
+        return temp_dict
 
-        Returns
-        -------
-        list
-            List of valid regions for all species.
-        """
-        temp_regions = self.execute_query(query.combined_regions_all_species_without_synonyms_query)
-        return [item[0] for item in temp_regions]
-
-    def get_valid_regions_specify_species(self, species):
+    def get_valid_regions_specify_species(self, species, region=None):
         """
         Retrieve a list of valid regions for a specific species from the data source.
 
@@ -83,18 +71,52 @@ class SckanCompare(object):
         ----------
         species : str
             The species for which to retrieve valid regions.
+        region: str, optional
+            The region for which to retrieve valid regions.
+            Valid values are: A, B, C or None. Defaults to None and returns all regions.
 
         Returns
         -------
-        list
-            List of valid regions for the specified species.
+        dict
+            Dict of valid region URIs as keys and corresponding labels as values
         """
         if not species:
             raise ValueError("species needs to be specified!")
         if species not in self.valid_species_list:
             raise ValueError("Invalid species specified!")
-        temp_regions = self.execute_query(query.combined_regions_specify_species_without_synonyms_query, species)
-        return [item[0] for item in temp_regions]
+        if species not in globals.AVAILABLE_SPECIES_MAPS.keys():
+            raise ValueError("Not currently implemented for species = {}!".format(species))
+        if not region:
+            temp_regions = self.execute_query(query.combined_regions_specify_species_without_synonyms_query, species)
+        elif region == "A":
+            temp_regions = self.execute_query(query.regionsA_specify_species_with_synonyms_query, species)
+        elif region == "B":
+            temp_regions = self.execute_query(query.regionsB_specify_species_with_synonyms_query, species)
+        elif region == "C":
+            temp_regions = self.execute_query(query.regionsC_specify_species_with_synonyms_query, species)
+        else:
+            raise ValueError("Invalid region specified!")
+        
+        # mapping of region labels to URIs done based on stored JSON files for each species
+        # TODO: currently works only for species with available JSON maps
+        datapath = pkg_resources.resource_filename("sckan_compare", "data")
+        filepath = os.path.join(datapath, globals.AVAILABLE_SPECIES_MAPS[species])
+        with open(filepath, encoding='utf-8-sig') as json_file:
+            data = json.load(json_file)
+        region_map = {}
+        for item in data:
+            region_map[item["URL"]] = item["Name"]
+
+        temp_dict = {}
+        for item in temp_regions[1:]:
+            if item[0] not in region_map.keys():
+                # only considering regions present in current JSON maps
+                # ignoring and dropping other regions
+                # TODO: handle this in future
+                continue
+            temp_dict[item[0]] = region_map[item[0]]
+
+        return temp_dict
 
     def execute_query(self, query_string, species=None, cached=True):
         """
@@ -160,26 +182,14 @@ class SckanCompare(object):
         pandas.DataFrame
             The DataFrame with replaced species synonyms.
         """
-        output = self.execute_query(query.species_without_synonyms_query)
-        uri_label_dict = {}
-        # first element is column labels, so ignore
-        for item in output[1:]:
-            if item[0] in uri_label_dict:
-                # Note: query returns some synonyms for certain entries
-                # TODO: Discuss with SPARC team why this is so
-                # Temporary solution: additional manual mapping
-                if item[1] in globals.DUPLICATE_SPECIES_RESOLVER.keys():
-                    uri_label_dict[item[0]] = globals.DUPLICATE_SPECIES_RESOLVER[item[1]]
-                else:
-                    uri_label_dict[item[0]] = item[1]
-            uri_label_dict[item[0]] = item[1]
-        
+        uri_label_dict = self.get_valid_species()
+
         # update values in dataframe
         if 'Species' in df.columns:
             df['Species'] = df['Species_link'].map(uri_label_dict)
         return df
 
-    def replace_region_synonyms_dataframe(self, df):
+    def replace_region_synonyms_dataframe(self, df, species):
         """
         Replace region synonyms in a DataFrame with unique labels.
 
@@ -197,19 +207,14 @@ class SckanCompare(object):
         pandas.DataFrame
             The DataFrame with replaced region synonyms.
         """
+        if not species:
+            raise ValueError("species needs to be specified!")
+        if species not in self.valid_species_list:
+            raise ValueError("Invalid species specified!")
+        if species not in globals.AVAILABLE_SPECIES_MAPS.keys():
+            raise ValueError("Not currently implemented for species = {}!".format(species))
 
-        output = self.execute_query(query.combined_regions_all_species_without_synonyms_query)
-        uri_label_dict = {}
-        # first element is column labels, so ignore
-        for item in output[1:]:
-            if item[0] in uri_label_dict:
-                # Note: query returns some synonyms for certain entries
-                # TODO: Discuss with SPARC team why this is so
-                # Temporary solution:
-                # -> Handling this now by picking shortest label
-                if len(item[1]) >= len(uri_label_dict[item[0]]):
-                    continue
-            uri_label_dict[item[0]] = item[1]
+        uri_label_dict = self.get_valid_regions_specify_species(species=species)
 
         # update values in dataframe
         if 'Region_A' in df.columns:
@@ -220,7 +225,7 @@ class SckanCompare(object):
             df['Region_C'] = df['C'].map(uri_label_dict)
         return df
 
-    def get_filtered_dataframe(self, result):
+    def get_filtered_dataframe(self, result, species=None):
         """
         Create a filtered DataFrame from a query result.
         Replaces all synonyms for species and regions with unique labels,
@@ -228,22 +233,31 @@ class SckanCompare(object):
 
         Parameters
         ----------
-        result : list
+        data : list
             The query result.
+        species : str
+            The species for which the data is provided.
 
         Returns
         -------
         pandas.DataFrame
             The filtered DataFrame.
         """
+        if not species:
+            raise ValueError("species needs to be specified!")
+        if species not in self.valid_species_list:
+            raise ValueError("Invalid species specified!")
+        if species not in globals.AVAILABLE_SPECIES_MAPS.keys():
+            raise ValueError("Not currently implemented for species = {}!".format(species))
+        
         # convert data to pandas dataframe with column names
         df_result = utils.get_dataframe(result)
 
         # replace duplicate instances of species name
-        df_result = utils.remove_duplicate_species(df_result)
+        df_result = self.replace_species_synonyms_dataframe(df_result)
 
         # replace synonyms with unique labels for each region
-        df_result = self.replace_region_synonyms(df_result)
+        df_result = self.replace_region_synonyms_dataframe(df_result, species)
 
         # remove duplicate rows based on all columns  
         df_result = df_result.drop_duplicates()
@@ -266,7 +280,7 @@ class SckanCompare(object):
         """
         if not species:
             raise ValueError("species needs to be specified!")
-        if species not in self.valid_species:
+        if species not in self.valid_species_list:
             raise ValueError("Invalid species specified!")
         if species not in globals.AVAILABLE_SPECIES_MAPS.keys():
             raise ValueError("{} visual map not currently available!".format(species))
