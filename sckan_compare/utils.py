@@ -30,6 +30,30 @@ def get_dataframe(data_as_list):
     df = df[1:]
     return df
 
+def filter_dataframe(df, column, value):
+    """
+    Filter a DataFrame based on value in specific column.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        The DataFrame to be filtered.
+    column : str
+        The column to be filtered.
+    value : str
+        The value to be used for filtering column.
+
+    Returns
+    -------
+    pandas.DataFrame
+        The filtered DataFrame.
+    """
+    # check if column exists in DataFrame
+    if column not in df.columns:
+        raise ValueError('Column {} not found in DataFrame.'.format(column))
+    # filter DataFrame based on value in column
+    df = df[df[column] == value]
+    return df
 
 def remove_duplicate_species(df):
     """
@@ -48,59 +72,3 @@ def remove_duplicate_species(df):
     for item in globals.DUPLICATE_SPECIES_RESOLVER:
         df = df.replace(item, globals.DUPLICATE_SPECIES_RESOLVER[item])
     return df
-
-
-def get_species_name(projection_fibre=False):
-    """
-    Get a list of unique species names.
-
-    Parameters
-    ----------
-    projection_fibre : bool, optional
-        Whether to include projection fibre species. Defaults to False.
-
-    Returns
-    -------
-    list
-        List of unique species names.
-    """
-    species = ['Canis familiaris', 'Cavia porcellus', 'Homo sapiens', 'Mammal',
-         'Mus musculus', 'Rattus norvegicus']
-
-    if projection_fibre:
-        species = ['Canis familiaris', 'Cavia porcellus', 'Homo sapiens', 'Mammal',
-       'Mus musculus', 'Rattus norvegicus', 'Vertebrata']
-
-    return species
-
-
-def get_phenotype_neuron():
-    """
-    Get a list of unique neuron phenotypes.
-
-    Returns
-    -------
-    list
-        List of unique neuron phenotypes.
-    """
-    phenotype = ['Enteric phenotype', 'Parasympathetic Post-Ganglionic phenotype',
-          'Parasympathetic Pre-Ganglionic phenotype',
-          'Parasympathetic phenotype', 'Post ganglionic phenotype',
-          'Pre ganglionic phenotype',
-          'Sympathetic Post-Ganglionic phenotype',
-          'Sympathetic Pre-Ganglionic phenotype', 'Sympathetic phenotype']
-
-    return phenotype
-
-def get_circuit_roles():
-    """
-    Get species and circuit roles.
-
-    Returns
-    -------
-    tuple
-        A tuple containing a list of species and a list of circuit roles.
-    """
-    species = ['Homo sapiens', 'Mammal', 'Rattus norvegicus']
-    circuit_roles = ['Motor phenotype', 'Sensory phenotype']
-    return species, circuit_roles
