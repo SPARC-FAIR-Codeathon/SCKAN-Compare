@@ -233,6 +233,98 @@ SELECT DISTINCT ?Region_URI ?Region
 ORDER BY ?Region_URI ?Region
 """
 
+combined_phenotypes_all_species_query = """
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#> 
+
+SELECT DISTINCT ?Phenotype_link ?Phenotype
+{{
+    ?Neuron_IRI rdfs:label ?Neuron_Label;
+                ilxtr:hasSomaLocation ?A;
+                (ilxtr:hasAxonTerminalLocation | ilxtr:hasAxonSensoryLocation) ?B. 
+
+    ?Neuron_IRI ilxtr:isObservedInSpecies ?Species_link.
+    ?Neuron_IRI ilxtr:hasNeuronalPhenotype ?Phenotype_link.
+
+    ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
+    ?Phenotype_link (rdfs:label | oboInOwl:hasExactSynonym) ?Phenotype.
+    ?A (rdfs:label | oboInOwl:hasExactSynonym) ?Region_A.
+    ?B (rdfs:label | oboInOwl:hasExactSynonym) ?Region_B.
+}}
+ORDER BY ?Phenotype_link ?Phenotype
+"""
+
+combined_phenotypes_specify_species_query = """
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#> 
+
+SELECT DISTINCT ?Phenotype_link ?Phenotype
+{{
+    ?Neuron_IRI rdfs:label ?Neuron_Label;
+                ilxtr:hasSomaLocation ?A;
+                (ilxtr:hasAxonTerminalLocation | ilxtr:hasAxonSensoryLocation) ?B. 
+
+    ?Neuron_IRI ilxtr:isObservedInSpecies ?Species_link.
+    ?Neuron_IRI ilxtr:hasNeuronalPhenotype ?Phenotype_link.
+
+    ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
+    ?Phenotype_link (rdfs:label | oboInOwl:hasExactSynonym) ?Phenotype.
+    ?A (rdfs:label | oboInOwl:hasExactSynonym) ?Region_A.
+    ?B (rdfs:label | oboInOwl:hasExactSynonym) ?Region_B.
+
+    FILTER (str(?Species) = "{species_param}")
+}}
+ORDER BY ?Phenotype_link ?Phenotype
+"""
+
+combined_circuit_role_phenotypes_all_species_query = """
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#> 
+
+SELECT DISTINCT ?Phenotype_link ?Phenotype
+{{
+    ?Neuron_IRI rdfs:label ?Neuron_Label;
+                ilxtr:hasSomaLocation ?A;
+                (ilxtr:hasAxonTerminalLocation | ilxtr:hasAxonSensoryLocation) ?B. 
+
+    ?Neuron_IRI ilxtr:isObservedInSpecies ?Species_link.
+    ?Neuron_IRI ilxtr:hasCircuitRole ?Phenotype_link.
+
+    ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
+    ?Phenotype_link (rdfs:label | oboInOwl:hasExactSynonym) ?Phenotype.
+    ?A (rdfs:label | oboInOwl:hasExactSynonym) ?Region_A.
+    ?B (rdfs:label | oboInOwl:hasExactSynonym) ?Region_B.
+}}
+ORDER BY ?Phenotype_link ?Phenotype
+"""
+
+combined_circuit_role_phenotypes_specify_species_query = """
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
+PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#> 
+
+SELECT DISTINCT ?Phenotype_link ?Phenotype
+{{
+    ?Neuron_IRI rdfs:label ?Neuron_Label;
+                ilxtr:hasSomaLocation ?A;
+                (ilxtr:hasAxonTerminalLocation | ilxtr:hasAxonSensoryLocation) ?B. 
+
+    ?Neuron_IRI ilxtr:isObservedInSpecies ?Species_link.
+    ?Neuron_IRI ilxtr:hasCircuitRole ?Phenotype_link.
+
+    ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
+    ?Phenotype_link (rdfs:label | oboInOwl:hasExactSynonym) ?Phenotype.
+    ?A (rdfs:label | oboInOwl:hasExactSynonym) ?Region_A.
+    ?B (rdfs:label | oboInOwl:hasExactSynonym) ?Region_B.
+
+    FILTER (str(?Species) = "{species_param}")
+}}
+ORDER BY ?Phenotype_link ?Phenotype
+"""
+
 neuron_path_query = """
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -269,8 +361,8 @@ PREFIX partOf: <http://purl.obolibrary.org/obo/BFO_0000050>
 PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
 PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#> 
 
-SELECT DISTINCT ?Neuron_IRI ?Neuron_Label ?Species ?phenotype ?A ?B ?C ?Region_A ?Region_B ?Region_C
-{
+SELECT DISTINCT ?Neuron_IRI ?Neuron_Label ?A ?Region_A ?B ?Region_B ?C ?Region_C ?Species ?Species_link ?Phenotype_link ?Phenotype
+{{
 
     ?Neuron_IRI rdfs:label ?Neuron_Label.
 
@@ -280,16 +372,17 @@ SELECT DISTINCT ?Neuron_IRI ?Neuron_Label ?Species ?phenotype ?A ?B ?C ?Region_A
                     (ilxtr:hasAxonTerminalLocation | ilxtr:hasAxonSensoryLocation) ?B. 
 
     ?Neuron_IRI ilxtr:isObservedInSpecies ?Species_link.
-    ?Neuron_IRI ilxtr:hasNeuronalPhenotype ?phenotype_link.
+    ?Neuron_IRI ilxtr:hasNeuronalPhenotype ?Phenotype_link.
 
     ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
-    ?phenotype_link (rdfs:label | oboInOwl:hasExactSynonym) ?phenotype.
+    ?Phenotype_link (rdfs:label | oboInOwl:hasExactSynonym) ?Phenotype.
     ?A (rdfs:label | oboInOwl:hasExactSynonym) ?Region_A.
     ?B (rdfs:label | oboInOwl:hasExactSynonym) ?Region_B.
     ?C (rdfs:label | oboInOwl:hasExactSynonym) ?Region_C.
 
-}
-ORDER BY ?Neuron_IRI ?Neuron_Label ?Species ?phenotype ?A ?B ?C ?Region_A ?Region_B ?Region_C
+    FILTER (str(?Species) = "{species_param}")
+}}
+ORDER BY ?Phenotype_link ?Phenotype
 """
 
 neuron_circuit_role_query = """
@@ -300,8 +393,8 @@ PREFIX partOf: <http://purl.obolibrary.org/obo/BFO_0000050>
 PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
 PREFIX oboInOwl: <http://www.geneontology.org/formats/oboInOwl#> 
 
-SELECT DISTINCT ?Neuron_IRI ?Neuron_Label ?Species ?phenotype ?A ?B ?C ?Region_A ?Region_B ?Region_C
-{
+SELECT DISTINCT ?Neuron_IRI ?Neuron_Label ?A ?Region_A ?B ?Region_B ?C ?Region_C ?Species ?Species_link ?Phenotype_link ?Phenotype
+{{
 
     ?Neuron_IRI rdfs:label ?Neuron_Label.
 
@@ -311,16 +404,17 @@ SELECT DISTINCT ?Neuron_IRI ?Neuron_Label ?Species ?phenotype ?A ?B ?C ?Region_A
                     (ilxtr:hasAxonTerminalLocation | ilxtr:hasAxonSensoryLocation) ?B. 
 
     ?Neuron_IRI ilxtr:isObservedInSpecies ?Species_link.
-    ?Neuron_IRI ilxtr:hasCircuitRole ?phenotype_link.
+    ?Neuron_IRI ilxtr:hasCircuitRole ?Phenotype_link.
 
     ?Species_link (rdfs:label | oboInOwl:hasExactSynonym) ?Species.
-    ?phenotype_link (rdfs:label | oboInOwl:hasExactSynonym) ?phenotype.
+    ?Phenotype_link (rdfs:label | oboInOwl:hasExactSynonym) ?Phenotype.
     ?A (rdfs:label | oboInOwl:hasExactSynonym) ?Region_A.
     ?B (rdfs:label | oboInOwl:hasExactSynonym) ?Region_B.
     ?C (rdfs:label | oboInOwl:hasExactSynonym) ?Region_C.
 
-}
-ORDER BY ?Neuron_IRI ?Neuron_Label ?Species ?phenotype ?A ?B ?C ?Region_A ?Region_B ?Region_C
+    FILTER (str(?Species) = "{species_param}")
+}}
+ORDER BY ?Phenotype_link ?Phenotype
 """
 
 projection_fibres_query = """
