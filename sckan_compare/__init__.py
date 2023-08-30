@@ -62,6 +62,36 @@ class SckanCompare(object):
             else:
                 temp_dict[item[0]] = item[1]
         return temp_dict
+    
+    def get_valid_phenotypes(self):
+        """
+        Retrieve a list of valid phenotypes from the data source.
+
+        Returns
+        -------
+        dict
+            Dict with valid phenotypes URIs as keys and corresponding labels as values.
+        """
+        temp_phenotypes = self.execute_query(query.combined_phenotypes_all_species_query)
+        temp_dict = {}
+        for item in temp_phenotypes[1:]:
+            temp_dict[item[0]] = item[1]
+        return temp_dict
+    
+    def get_valid_phenotypes_circuit_role(self):
+        """
+        Retrieve a list of valid phenotypes with circuit role from the data source.
+
+        Returns
+        -------
+        dict
+            Dict with valid phenotypes URIs as keys and corresponding labels as values.
+        """
+        temp_phenotypes = self.execute_query(query.combined_circuit_role_phenotypes_all_species_query)
+        temp_dict = {}
+        for item in temp_phenotypes[1:]:
+            temp_dict[item[0]] = item[1]
+        return temp_dict
 
     def get_valid_regions_specify_species(self, species, region=None):
         """
@@ -225,7 +255,7 @@ class SckanCompare(object):
             df['Region_C'] = df['C'].map(uri_label_dict)
         return df
 
-    def get_filtered_dataframe(self, result, species=None):
+    def get_filtered_dataframe(self, result, species=None, filter_column=None, filter_value=None):
         """
         Create a filtered DataFrame from a query result.
         Replaces all synonyms for species and regions with unique labels,
@@ -237,6 +267,10 @@ class SckanCompare(object):
             The query result.
         species : str
             The species for which the data is provided.
+        filter_column : str, optional
+            The column to be filtered.
+        filter_value : str, optional
+            The value to be used for filtering column.
 
         Returns
         -------
@@ -258,6 +292,9 @@ class SckanCompare(object):
 
         # replace synonyms with unique labels for each region
         df_result = self.replace_region_synonyms_dataframe(df_result, species)
+
+        # filter dataframe based on filter_column and filter_value
+        df_result = utils.filter_dataframe(df_result, filter_column, filter_value)
 
         # remove duplicate rows based on all columns  
         df_result = df_result.drop_duplicates()
