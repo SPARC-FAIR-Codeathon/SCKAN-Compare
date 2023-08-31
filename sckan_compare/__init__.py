@@ -8,13 +8,15 @@ License: Apache License 2.0
 
 import os
 import json
+import time
 import pkg_resources
-import numpy as np
-import pandas as pd
 
 from . import globals
 from . import query
-from .visualize import Visualizer
+from . import utils
+from .cachemanager import CacheManager
+from .anatomyvis import AntomyVis
+from .blockvis import BlockVis
 
 
 class SckanCompare(object):
@@ -22,333 +24,340 @@ class SckanCompare(object):
     Base class for accessing functionality
     """
 
-    def __init__(self, species="Homo sapiens", endpoint=globals.BLAZEGRAPH_ENDPOINT):
+    def __init__(self, endpoint=globals.BLAZEGRAPH_ENDPOINT, max_cache_days=globals.DEFAULT_MAX_CACHE_DAYS):
+        """
+        Initialize SckanCompare object.
+
+        Parameters
+        ----------
+        endpoint : str, optional
+            The Blazegraph endpoint URL. Defaults to globals.BLAZEGRAPH_ENDPOINT (https://blazegraph.scicrunch.io/blazegraph/sparql).
+        max_cache_days : int, optional
+            Maximum number of days to keep cached data. Defaults to globals.DEFAULT_MAX_CACHE_DAYS (7 days).
+        """
         self.endpoint = endpoint
-        self.region_dict = {}
-        self.vis = None
-        self.species = species
-        self.load_json_file()
 
-    def execute_query(self, query_string):
-        # execute specified SPAQRL query and return result
-        return query.sparql_query(query_string, endpoint=self.endpoint)
+        self.cache_manager = CacheManager(os.path.join(
+            os.path.dirname(__file__), 'api_cache'), max_cache_days)
+        
+        self.valid_species_list = self.get_valid_species().values()
 
+    def get_valid_species(self):
+        """
+        Retrieve a list of valid species from the data source.
 
-    def load_json_file(self):
-        datapath = pkg_resources.resource_filename("sckan_compare", "data")
-        if self.species == "Mus musculus":
-            filepath = os.path.join(datapath, "coords_mouse.json")
-        elif self.species == "Rattus norvegicus":
-            filepath = os.path.join(datapath, "coords_rat.json")
+        Returns
+        -------
+        dict
+            Dict with valid species URIs as keys and corresponding labels as values.
+        """
+        temp_species = self.execute_query(query.species_without_synonyms_query)
+        # Note: query returns some synonyms for certain entries
+        # TODO: Discuss with SPARC team why this is so
+        # Temporary solution: additional manual mapping
+        temp_dict = {}
+        for item in temp_species[1:]:
+            if item[1] in globals.DUPLICATE_SPECIES_RESOLVER.keys():
+                temp_dict[item[0]] = globals.DUPLICATE_SPECIES_RESOLVER[item[1]]
+            else:
+                temp_dict[item[0]] = item[1]
+        return temp_dict
+    
+    def get_valid_phenotypes(self):
+        """
+        Retrieve a list of valid phenotypes from the data source.
+
+        Returns
+        -------
+        dict
+            Dict with valid phenotypes URIs as keys and corresponding labels as values.
+        """
+        temp_phenotypes = self.execute_query(query.combined_phenotypes_all_species_query)
+        temp_dict = {}
+        for item in temp_phenotypes[1:]:
+            temp_dict[item[0]] = item[1]
+        return temp_dict
+    
+    def get_valid_phenotypes_circuit_role(self):
+        """
+        Retrieve a list of valid phenotypes with circuit role from the data source.
+
+        Returns
+        -------
+        dict
+            Dict with valid phenotypes URIs as keys and corresponding labels as values.
+        """
+        temp_phenotypes = self.execute_query(query.combined_circuit_role_phenotypes_all_species_query)
+        temp_dict = {}
+        for item in temp_phenotypes[1:]:
+            temp_dict[item[0]] = item[1]
+        return temp_dict
+
+    def get_valid_regions_specify_species(self, species, region=None):
+        """
+        Retrieve a list of valid regions for a specific species from the data source.
+
+        Parameters
+        ----------
+        species : str
+            The species for which to retrieve valid regions.
+        region: str, optional
+            The region for which to retrieve valid regions.
+            Valid values are: A, B, C or None. Defaults to None and returns all regions.
+
+        Returns
+        -------
+        dict
+            Dict of valid region URIs as keys and corresponding labels as values
+        """
+        if not species:
+            raise ValueError("species needs to be specified!")
+        if species not in self.valid_species_list:
+            raise ValueError("Invalid species specified!")
+        if species not in globals.AVAILABLE_SPECIES_MAPS.keys():
+            raise ValueError("Not currently implemented for species = {}!".format(species))
+        if not region:
+            temp_regions = self.execute_query(query.combined_regions_specify_species_without_synonyms_query, species)
+        elif region == "A":
+            temp_regions = self.execute_query(query.regionsA_specify_species_with_synonyms_query, species)
+        elif region == "B":
+            temp_regions = self.execute_query(query.regionsB_specify_species_with_synonyms_query, species)
+        elif region == "C":
+            temp_regions = self.execute_query(query.regionsC_specify_species_with_synonyms_query, species)
         else:
-            # default
-            filepath = os.path.join(datapath, "coords_human.json")
-
+            raise ValueError("Invalid region specified!")
+        
+        # mapping of region labels to URIs done based on stored JSON files for each species
+        # TODO: currently works only for species with available JSON maps
+        datapath = pkg_resources.resource_filename("sckan_compare", "data")
+        filepath = os.path.join(datapath, globals.AVAILABLE_SPECIES_MAPS[species])
         with open(filepath, encoding='utf-8-sig') as json_file:
             data = json.load(json_file)
-
-        self.region_dict[self.species] = {}
+        region_map = {}
         for item in data:
-            self.region_dict[self.species][item["Name"]] = [int(item["X"]), int(item["Y"])]
-   
-    def reset_vis(self):
-        self.vis = Visualizer(self.region_dict[self.species], self.species)
-        return self.vis
+            region_map[item["URL"]] = item["Name"]
 
-    def add_connection(self, region_A=None, region_B=None, region_C=None, neuron=None):
-        if not self.vis:
-            self.vis = Visualizer(self.region_dict[self.species], self.species)
+        temp_dict = {}
+        for item in temp_regions[1:]:
+            if item[0] not in region_map.keys():
+                # only considering regions present in current JSON maps
+                # ignoring and dropping other regions
+                # TODO: handle this in future
+                continue
+            temp_dict[item[0]] = region_map[item[0]]
 
-        if not region_A:
-            raise ValueError("region_A needs to be specified!")
-        if not region_B:
-            raise ValueError("region_B needs to be specified!")
+        return temp_dict
 
-        if region_C:
-            # A->C->B
-            self.vis.draw_edge_ABC(region_A, region_B, region_C, neuron)
+    def execute_query(self, query_string, species=None, cached=True):
+        """
+        Execute a SPARQL query and return the result.
+
+        Parameters
+        ----------
+        query_string : str
+            The SPARQL query string to execute.
+        species : str, optional
+            The species to consider in the query, if applicable.
+        cached : bool, optional
+            Whether to use cached data if available. Defaults to False.
+
+        Returns
+        -------
+        list
+            The query result.
+        """
+        # identify if species placeholder present in query_string
+        if "{species_param}" in query_string:
+            if not species:
+                raise ValueError("species needs to be specified!")
+            if species not in self.valid_species_list:
+                raise ValueError("Invalid species specified!")
+            query_with_species = query_string.format(species_param=species)
         else:
-            # A->B
-            self.vis.draw_edge_AB(region_A, region_B, neuron)
+            query_with_species = query_string
 
-
-    def get_graph(self):
-        return self.vis.get_figure()
+        if cached:
+            cached_data = self.cache_manager.get_cached_data(
+                query_with_species + self.endpoint)
+            if cached_data:
+                # to check for outdated cache
+                cached_time, data = cached_data
+                now = time.time()
+                if (now - cached_time) > (self.cache_manager.max_cache_days * 86400):
+                    # if outdated, remove the item; fetch afresh
+                    self.cache.pop(query_with_species + self.endpoint)
+                else:
+                    # return cached data
+                    return data
+        data = query.sparql_query(query_with_species, endpoint=self.endpoint)
+        # cache the result
+        self.cache_manager.cache_data(query_with_species + self.endpoint, data)
+        return data
     
-
-    def get_unique_region_IRI(self, df_result):
+    def replace_species_synonyms_dataframe(self, df):
         """
-        :param df_result: dataframe
-        :return: unique regions in form of hyperlinks
+        Replace species synonyms in a DataFrame with unique labels.
+
+        e.g. 'Rattus norvegicus' : http://purl.obolibrary.org/obo/NCBITaxon_10116
+        has several synonyms, such as 'brown rat', 'Norway rat', 'rats', 'rat'.
+        This method is used to map these synonyms to the parent label.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            The DataFrame containing species information.
+
+        Returns
+        -------
+        pandas.DataFrame
+            The DataFrame with replaced species synonyms.
         """
-        region_A = np.unique(df_result.loc[:,"A"])
-        region_B = np.unique(df_result.loc[:,"B"])
-        region_C = np.unique(df_result.loc[:,"C"])
-        unique_regions = np.unique(np.concatenate((region_A, region_B, region_C)))
-        return unique_regions
+        uri_label_dict = self.get_valid_species()
 
-    
-    def get_unique_regions (self, df_result):
+        # update values in dataframe
+        if 'Species' in df.columns:
+            df['Species'] = df['Species_link'].map(uri_label_dict)
+        return df
+
+    def replace_region_synonyms_dataframe(self, df, species):
         """
-        :param df_result: dataframe
-        :return: region labels
+        Replace region synonyms in a DataFrame with unique labels.
+
+        e.g. 'ovary' :  http://purl.obolibrary.org/obo/UBERON_0000992
+        has several synonyms, such as 'animal ovary', 'female gonad', etc.
+        This method is used to map these synonyms to the parent label.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            The DataFrame containing region information.
+
+        Returns
+        -------
+        pandas.DataFrame
+            The DataFrame with replaced region synonyms.
         """
-        unique_regions = self.get_unique_region_IRI(df_result)
-        test_template = """
-        PREFIX owl: <http://www.w3.org/2002/07/owl#>
-        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX partOf: <http://purl.obolibrary.org/obo/BFO_0000050>
-        PREFIX ilxtr: <http://uri.interlex.org/tgbugs/uris/readable/>
+        if not species:
+            raise ValueError("species needs to be specified!")
+        if species not in self.valid_species_list:
+            raise ValueError("Invalid species specified!")
+        if species not in globals.AVAILABLE_SPECIES_MAPS.keys():
+            raise ValueError("Not currently implemented for species = {}!".format(species))
 
-        SELECT DISTINCT ?annotation ?label 
-        WHERE {{
-            ?annotation rdfs:label ?label. 
+        uri_label_dict = self.get_valid_regions_specify_species(species=species)
 
-            FILTER (?annotation IN ({}))
-        }}
-        ORDER BY ?annotation ?label 
+        # update values in dataframe
+        if 'Region_A' in df.columns:
+            df['Region_A'] = df['A'].map(uri_label_dict)
+        if 'Region_B' in df.columns:
+            df['Region_B'] = df['B'].map(uri_label_dict)
+        if 'Region_C' in df.columns:
+            df['Region_C'] = df['C'].map(uri_label_dict)
+        return df
+
+    def get_filtered_dataframe(self, result, species=None, filter_column=None, filter_value=None):
         """
+        Create a filtered DataFrame from a query result.
+        Replaces all synonyms for species and regions with unique labels,
+        followed by the deletion of duplicate rows.
 
-        # first 100
-        formatted_links = " ,".join(["<{}>".format(link) for link in unique_regions[:100]])
-        test_query = test_template.format(formatted_links)
-        result = self.execute_query(test_query)
-        final_df = pd.DataFrame(result).loc[1:, :]
+        Parameters
+        ----------
+        data : list
+            The query result.
+        species : str
+            The species for which the data is provided.
+        filter_column : str, optional
+            The column to be filtered.
+        filter_value : str, optional
+            The value to be used for filtering column.
 
-        # rest 100
-        formatted_links = " ,".join(["<{}>".format(link) for link in unique_regions[100:200]])
-        test_query = test_template.format(formatted_links)
-        result = self.execute_query(test_query)
-        final_df = pd.concat([final_df, pd.DataFrame(result).loc[1:, :]], ignore_index=True)
-
-        # rest all
-        formatted_links = " ,".join(["<{}>".format(link) for link in unique_regions[200:]])
-        test_query = test_template.format(formatted_links)
-        result = self.execute_query(test_query)
-        final_df = pd.concat([final_df, pd.DataFrame(result).loc[1:, :]], ignore_index=True)
-
-        final_df.drop_duplicates(subset=0, keep='first', inplace=True)
-        return final_df
-    
-    # getting dataframe from queries
-    def get_neuron_dataframe(self, result, species_name=None, phenotype_name=None):
+        Returns
+        -------
+        pandas.DataFrame
+            The filtered DataFrame.
         """
-        :param result: from queries
-        :param species_name: takes only subset for circuit_role (check get_circuit_roles), all from get_species_name
-        :param phenotype_name: from get_phenotype_neuron or from get_circuit_roles
-        :return:
-        """
-
-        df_result = pd.DataFrame(result)
-        # get column names right
-        df_result.columns = df_result.loc[0, :].to_list()
-        df_result = df_result.loc[1:, :]
-
-        # replace duplicate instances of species name
-        df_result = df_result.replace('Mammalia', 'Mammal')
-        df_result = df_result.replace('mammals', 'Mammal')
-        df_result = df_result.replace('Vertebrata <vertebrates>', 'Vertebrata')
-        df_result = df_result.replace('vertebrates', 'Vertebrata')
-        df_result = df_result.replace('human', 'Homo sapiens')
-        df_result = df_result.replace('Norway rat', 'Rattus norvegicus')
-        df_result = df_result.replace('brown rat', 'Rattus norvegicus')
-        df_result = df_result.replace('rat', 'Rattus norvegicus')
-        df_result = df_result.replace('rats', 'Rattus norvegicus')
-        df_result = df_result.replace('mouse', 'Mus musculus')
-        df_result = df_result.replace('house mouse', 'Mus musculus')
-
-        if phenotype_name:
-
-            if species_name:
-                filtered_df = df_result[(df_result.Species == species_name)]
-                unique_regions_df = self.get_unique_regions(filtered_df)
-                # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
-                replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
-
-                # # Use the map function to replace the values in DataFrame 1
-                filtered_df.loc[:, "Region_A"] = filtered_df.A.map(replacement_dict)
-                filtered_df.loc[:, "Region_B"] = filtered_df.B.map(replacement_dict)
-                filtered_df.loc[:, "Region_C"] = filtered_df.C.map(replacement_dict)
-
-                # remove duplicate
-                filtered_df = filtered_df.drop_duplicates()
-                filtered_df = filtered_df[(filtered_df.phenotype == phenotype_name)]
-
-                return filtered_df
-
-            else:
-                unique_regions_df = self.get_unique_regions(df_result)
-                # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
-                replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
-
-                # # Use the map function to replace the values in DataFrame 1
-                df_result.loc[:, "Region_A"] = df_result.A.map(replacement_dict)
-                df_result.loc[:, "Region_B"] = df_result.B.map(replacement_dict)
-                df_result.loc[:, "Region_C"] = df_result.C.map(replacement_dict)
-
-                # remove duplicate
-                df_result = df_result.drop_duplicates()
-                df_result = df_result[(df_result.phenotype == phenotype_name)]
-
-                return df_result
-
-        else:
-
-            if species_name:
-                filtered_df = df_result[(df_result.Species == species_name)]
-                unique_regions_df = self.get_unique_regions(filtered_df)
-                # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
-                replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
-
-                # # Use the map function to replace the values in DataFrame 1
-                filtered_df.loc[:, "Region_A"] = filtered_df.A.map(replacement_dict)
-                filtered_df.loc[:, "Region_B"] = filtered_df.B.map(replacement_dict)
-                filtered_df.loc[:, "Region_C"] = filtered_df.C.map(replacement_dict)
-
-                # remove duplicate
-                filtered_df = filtered_df.drop_duplicates()
-
-                return filtered_df
-
-            else:
-                unique_regions_df = self.get_unique_regions(df_result)
-                # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
-                replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
-
-                # # Use the map function to replace the values in DataFrame 1
-                df_result.loc[:, "Region_A"] = df_result.A.map(replacement_dict)
-                df_result.loc[:, "Region_B"] = df_result.B.map(replacement_dict)
-                df_result.loc[:, "Region_C"] = df_result.C.map(replacement_dict)
-
-                # remove duplicate
-                df_result = df_result.drop_duplicates()
-
-                return df_result
-
-    def projection_fibres_dataframe(self, result, species_name=None):
-        """
-
-            :param result: from queries
-            :param species_name: takes only subset for circuit_role (check get_circuit_roles), all from get_species_name
-            :param phenotype_name: from get_phenotype_neuron or from get_circuit_roles
-            :return:
-            """
-
-        df_result = pd.DataFrame(result)
-        # get column names right
-        df_result.columns = df_result.loc[0, :].to_list()
-        df_result = df_result.loc[1:, :]
-
-        # replace duplicate instances of species name
-        df_result = df_result.replace('Mammalia', 'Mammal')
-        df_result = df_result.replace('mammals', 'Mammal')
-        df_result = df_result.replace('Vertebrata <vertebrates>', 'Vertebrata')
-        df_result = df_result.replace('vertebrates', 'Vertebrata')
-        df_result = df_result.replace('human', 'Homo sapiens')
-        df_result = df_result.replace('Norway rat', 'Rattus norvegicus')
-        df_result = df_result.replace('brown rat', 'Rattus norvegicus')
-        df_result = df_result.replace('rat', 'Rattus norvegicus')
-        df_result = df_result.replace('rats', 'Rattus norvegicus')
-        df_result = df_result.replace('mouse', 'Mus musculus')
-        df_result = df_result.replace('house mouse', 'Mus musculus')
-
-        if species_name:
-            filtered_df = df_result[(df_result.Species == species_name)]
-            unique_regions_df = self.get_unique_regions(filtered_df)
-            # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
-            replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
-
-            # # Use the map function to replace the values in DataFrame 1
-            filtered_df.loc[:, "Region_A"] = filtered_df.A.map(replacement_dict)
-            filtered_df.loc[:, "Region_B"] = filtered_df.B.map(replacement_dict)
-            filtered_df.loc[:, "Region_C"] = filtered_df.C.map(replacement_dict)
-
-            # remove duplicate
-            filtered_df = filtered_df.drop_duplicates()
-
-            return filtered_df
-
-        else:
-            unique_regions_df = self.get_unique_regions(df_result)
-            # Create a dictionary with the values from DataFrame 2 as keys and the replacement values as values
-            replacement_dict = dict(zip(unique_regions_df[0], unique_regions_df[1]))
-
-            # # Use the map function to replace the values in DataFrame 1
-            df_result.loc[:, "Region_A"] = df_result.A.map(replacement_dict)
-            df_result.loc[:, "Region_B"] = df_result.B.map(replacement_dict)
-            df_result.loc[:, "Region_C"] = df_result.C.map(replacement_dict)
-
-            # remove duplicate
-            df_result = df_result.drop_duplicates()
-
-            return df_result
-
-# visualising projections of neurons
-import dash
-import dash_cytoscape as cyto
-import dash_html_components as html
-
-def visualise_projection(result_df):
-    
-    # getting unique nodes
-    a = np.unique(result_df.loc[:,'Neuron_1_Label'])
-    b = np.unique(result_df.loc[:,'Neuron_2_Label'])
-    unique_nodes= np.unique(np.concatenate((a,b)))
+        if not species:
+            raise ValueError("species needs to be specified!")
+        if species not in self.valid_species_list:
+            raise ValueError("Invalid species specified!")
+        if species not in globals.AVAILABLE_SPECIES_MAPS.keys():
+            raise ValueError("Not currently implemented for species = {}!".format(species))
         
-    nodes = []
-    for node in unique_nodes:
-        nodes.append({"data": {"id": node, "label": node}})
-    
-    # construct connections between these nodes as required
-    edges = []
-    for i in range(len(result_df)):
-        item = {"data": {"source": result_df.iloc[i,0], "target": result_df.iloc[i,1]}}
-        edges.append(item)
-    
-    elements = nodes + edges
+        # convert data to pandas dataframe with column names
+        df_result = utils.get_dataframe(result)
 
-    #defines styling for the plot
-    default_stylesheet = [
-    {
-        "selector": "node",
-        "style": {
-            "width": "mapData(size, 0, 100, 20, 60)",
-            "height": "mapData(size, 0, 100, 20, 60)",
-            "content": "data(label)",
-            "font-size": "10px",
-            "text-valign": "center",
-            "text-halign": "center",}
-    },
-        {
-            "selector": "edge",
-            "style": {
-             #'line-style': 'dashed',
-            'target-arrow-color': 'black',
-            'target-arrow-shape': 'vee',
-            'curve-style' : 'straight',}
-      }
-    ]
+        # replace duplicate instances of species name
+        df_result = self.replace_species_synonyms_dataframe(df_result)
 
+        # replace synonyms with unique labels for each region
+        df_result = self.replace_region_synonyms_dataframe(df_result, species)
 
-    app = dash.Dash(__name__)
-    app.layout = html.Div([
-        cyto.Cytoscape(
-            id='cytoscape',
-            elements=elements,
-            stylesheet = default_stylesheet,
-            style={'width': '100%', 'height': '400px', 'background-image': 'url(./sample_bg.png)'},
-            layout={
-                # 'name': 'preset'
-                'name': 'cose'
-                # 'name': 'random'
-                #'name': 'circle'
-                # 'name': 'grid'
-            }
-            
-        )
-    ])
+        # filter dataframe based on filter_column and filter_value
+        if filter_column:
+            if not filter_value:
+                raise ValueError("filter_value not for specified column {}!".format(filter_column))
+            df_result = utils.filter_dataframe(df_result, filter_column, filter_value)
+
+        # remove duplicate rows based on all columns  
+        df_result = df_result.drop_duplicates()
+
+        return df_result
+
+    def plot_dataframe_anatomy_vis(self, df, species=None, region_A=None, region_B=None, region_C=None):
+        """
+        Plot anatomical connectivity map based on a DataFrame.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            The DataFrame containing connectivity information.
+        species : str, optional
+            The species for visualization.
+        region_A : str, optional
+            The source region for filtering.
+        region_B : str, optional
+            The target region for filtering.
+        region_C : str, optional
+            The intermediate region for filtering.
+
+        Returns
+        -------
+        go.FigureWidget
+            The Plotly figure widget.
+        """
+        # create AntomyVis object
+        vis = AntomyVis(species)
+        
+        # plot all connections in dataframe
+        vis.plot_dataframe(df)
+
+        return vis.fig
     
-    
-    if __name__ == '__main__':
-        app.run_server(debug=True, port=8051)
+    def plot_dataframe_block_vis(self, df, region_A=None, region_B=None):
+        """
+        Plot anatomical connectivity map based on a DataFrame.
+
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            The DataFrame containing connectivity information.
+        species : str, optional
+            The species for visualization.
+        region_A : str, optional
+            The source region for filtering.
+        region_B : str, optional
+            The target region for filtering.
+
+        Returns
+        -------
+        go.FigureWidget
+            The Plotly figure widget.
+        """
+        # create AntomyVis object
+        vis = BlockVis()
+
+        # plot all connections in dataframe
+        vis.plot_figure(df, region_A, region_B)
+
+        return vis.fig

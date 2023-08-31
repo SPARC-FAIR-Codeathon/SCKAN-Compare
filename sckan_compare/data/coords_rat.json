@@ -778,5 +778,11 @@
         "Name": "ovarian nerve plexus parasympathetic ganglion",
         "X": "40",
         "Y": "16"
+    },
+    {
+        "URL": "http://uri.interlex.org/base/ilx_0793626",
+        "Name": "ventrolateral periaqueductal gray",
+        "X": "5",
+        "Y": "5"
     }
 ]

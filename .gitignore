@@ -1,6 +1,10 @@
 # Compiled Python files
 *.py[cod]
 
+# Cached data
+/sckan_compare/api_cache
+api_cache.*
+
 # Backup files
 *~
 *.bak
@@ -12,9 +16,8 @@
 dist
 build
 .eggs/
-/docs
-docs_sphinx/_build/
-docs_sphinx/reference
+docs/_build/*
+docs/reference
 output/
 
 # Unit test / coverage reports
@@ -41,6 +44,18 @@ output/
 # vim files
 *.swp
 .rope*
+
+# Python files
+build
+dist
+MANIFEST
+
+# Egg metadata
+*.egg-info
+*.egg
+*.EGG
+*.EGG-INFO
+*.pkl
 
 # IPython
 .ipynb_checkpoints
