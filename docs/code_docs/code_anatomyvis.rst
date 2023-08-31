@@ -1,7 +1,7 @@
 Visualizer Class
 ================
 
-.. automodule:: sckan_compare.visualize.Visualizer
+.. automodule:: sckan_compare.anatomyvis.AntomyVis
     :members:
     :undoc-members:
     :show-inheritance:
