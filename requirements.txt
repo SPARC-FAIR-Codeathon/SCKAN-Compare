@@ -2,7 +2,6 @@ diskcache==5.6.1
 numpy==1.25.2
 pandas==2.0.3
 Pillow==10.0.0
-Pillow==10.0.0
 plotly==5.16.1
-Requests==2.31.0
+requests==2.31.0
 setuptools==65.5.0
