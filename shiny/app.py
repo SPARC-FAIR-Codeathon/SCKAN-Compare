@@ -1,14 +1,12 @@
 
-from shiny import App, Inputs, Outputs, Session, render, ui,  render_text
+from shiny import App, render, ui
 import shinyswatch
 import pandas as pd
-import utils
 import plotly.express as px
 #import the base class to access all features
 from sckan_compare import SckanCompare
 # access query sub-module; we can add all template queries in here and import as required
 from sckan_compare import query
-from sckan_compare.simplevis import SimpleVisualizer
 from shinywidgets import output_widget, render_widget
 import plotly.express as px
 import plotly.graph_objs as go
@@ -18,15 +16,19 @@ from urllib.parse import quote as url_quote
 
 
 ###
+df = px.data.tips()
+
 file_name = "organ_region.xlsx"
 organ_region  = pd.read_excel(file_name)
-neurons= utils.neuron_path_query() # get df all data query  ### uses package
-df = px.data.tips()
-cir = utils.neuron_circuit_role() # get hasCircuitRole query
-phenotype = utils.neuron_path_phenotype_query()
+
 sc = SckanCompare()
-result = sc.execute_query(query.neuron_path_query)
+neurons = sc.execute_query(query.neuron_path_all_species_query)
+cir = sc.execute_query(query.neuron_circuit_role_all_species_query)
+phenotype = sc.execute_query(query.neuron_path_phenotype_all_species_query)
+result = sc.execute_query(query.neuron_path_all_species_query)
+
 #############################################################################################################################
+
 app_ui = ui.page_fluid(
     ui.panel_title("SCKAN-Compare"),
     shinyswatch.theme.darkly(),
@@ -69,7 +71,7 @@ app_ui = ui.page_fluid(
                          
                          ui.column(12,
                           ui.input_text("mst1","Select target start region", placeholder=""),
-                          ui.input_text("emn1", "Select target end region", placeholder=""),
+                          ui.input_text("men2", "Select target end region", placeholder=""),
                           output_widget("map1")     
                                    ),
                          ui.column(12,
@@ -118,7 +120,7 @@ def server(input, output, session):
     def table1():
         # filter pathway target specie 1
         input_sp1 = input.sp1()
-        sp1_pathway= utils.get_neuron_dataframe(neurons, species_name=input_sp1 , phenotype_name=None) ### uses package
+        sp1_pathway= sc.get_filtered_dataframe(neurons, species=input_sp1) ### uses package
         columns_to_keep = ["Neuron_Label", "Region_A", "Region_B", "Region_C"]
         sp1_pathway =sp1_pathway[columns_to_keep]
         #filter organs 
@@ -138,9 +140,9 @@ def server(input, output, session):
             })
         final_filtered_data_sp1 = final_filtered_data_sp1.drop_duplicates(keep='first')
         #phenotype
-        hasCircuitRole= utils.get_neuron_dataframe(cir, species_name=input_sp1, phenotype_name=None) # fiilter specie + their hasCircuitRole   
-        hasNeuronalPhenotype = utils.get_neuron_dataframe(phenotype, species_name=input_sp1, phenotype_name=None) # fiilter specie + their hasNeuronalPhenotype
-        columns_to_keep2 = ["Neuron_Label", "Region_A", "Region_B", "Region_C", "phenotype"]
+        hasCircuitRole= sc.get_filtered_dataframe(cir, species=input_sp1) # fiilter specie + their hasCircuitRole   
+        hasNeuronalPhenotype = sc.get_filtered_dataframe(phenotype, species=input_sp1) # fiilter specie + their hasNeuronalPhenotype
+        columns_to_keep2 = ["Neuron_Label", "Region_A", "Region_B", "Region_C", "Phenotype"]
         #
 
         hasNeuronalPhenotype=  hasNeuronalPhenotype[columns_to_keep2]        
@@ -148,7 +150,7 @@ def server(input, output, session):
                 'Region_A': 'Start Region',
                 'Region_C': 'Intermediate Region',
                 'Region_B': 'End Region',
-                'phenotype': 'Neuronal Phenotype'
+                'Phenotype': 'Neuronal Phenotype'
             })      
         # Filter the rows with the same values in the specified columns
         final_filtered_data_sp1 = final_filtered_data_sp1.merge(
@@ -162,7 +164,7 @@ def server(input, output, session):
                 'Region_A': 'Start Region',
                 'Region_C': 'Intermediate Region',
                 'Region_B': 'End Region',
-                'phenotype': 'Circuit Role'
+                'Phenotype': 'Circuit Role'
             })
         final_filtered_data_sp1 = final_filtered_data_sp1.merge(
                 hasCircuitRole,
@@ -177,7 +179,7 @@ def server(input, output, session):
     def table2():
         # filter pathway target specie 2
         input_sp2 =input.sp2()
-        sp2_pathway= utils.get_neuron_dataframe(neurons, species_name=input_sp2 , phenotype_name=None)  ### uses package
+        sp2_pathway= sc.get_filtered_dataframe(neurons, species=input_sp2)  ### uses package
         columns_to_keep = ["Neuron_Label", "Region_A", "Region_B", "Region_C"]
         sp2_pathway =  sp2_pathway[columns_to_keep]
         #filter organs 
@@ -197,9 +199,9 @@ def server(input, output, session):
             })
         final_filtered_data_sp2 = final_filtered_data_sp2.drop_duplicates(keep='first')
             #phenotype
-        hasCircuitRole2= utils.get_neuron_dataframe(cir, species_name=input.sp2(), phenotype_name=None) # fiilter specie + their hasCircuitRole   
-        hasNeuronalPhenotype2 = utils.get_neuron_dataframe(phenotype, species_name=input.sp2(), phenotype_name=None) # fiilter specie + their hasNeuronalPhenotype
-        columns_to_keep2 = ["Neuron_Label", "Region_A", "Region_B", "Region_C", "phenotype"]
+        hasCircuitRole2= sc.get_filtered_dataframe(cir, species=input.sp2()) # fiilter specie + their hasCircuitRole   
+        hasNeuronalPhenotype2 = sc.get_filtered_dataframe(phenotype, species=input.sp2()) # fiilter specie + their hasNeuronalPhenotype
+        columns_to_keep2 = ["Neuron_Label", "Region_A", "Region_B", "Region_C", "Phenotype"]
         #
 
         hasNeuronalPhenotype2=  hasNeuronalPhenotype2[columns_to_keep2]        
@@ -207,7 +209,7 @@ def server(input, output, session):
                 'Region_A': 'Start Region',
                 'Region_C': 'Intermediate Region',
                 'Region_B': 'End Region',
-                'phenotype': 'Neuronal Phenotype'
+                'Phenotype': 'Neuronal Phenotype'
             })      
         # Filter the rows with the same values in the specified columns
         final_filtered_data_sp2 = final_filtered_data_sp2.merge(
@@ -221,7 +223,7 @@ def server(input, output, session):
                 'Region_A': 'Start Region',
                 'Region_C': 'Intermediate Region',
                 'Region_B': 'End Region',
-                'phenotype': 'Circuit Role'
+                'Phenotype': 'Circuit Role'
             })
         final_filtered_data_sp2 = final_filtered_data_sp2.merge(
             hasCircuitRole2,
@@ -234,31 +236,31 @@ def server(input, output, session):
     @render_widget
     def Graph1():
             # creating an instance of our class
+            sc = SckanCompare()
             
-            sc = SckanCompare(species=input.sp1())
             # to execute a SPARQL query
-
-            result_df = sc.get_neuron_dataframe(result, species_name=input.sp1())
+            result_df = sc.get_filtered_dataframe(result, species=input.sp1())
             selected_Region_A = input.st1() 
-            selected_Region_B = input.en1() 
-            simvis = SimpleVisualizer()
-            fig = simvis.plot_figure(result_df, selected_Region_A, selected_Region_B)
+            selected_Region_B = input.en1()
+
+            fig = sc.plot_dataframe_block_vis(result_df, selected_Region_A, selected_Region_B) 
             #fig.show()
             #fig
             return fig
+    
     @output
     @render_widget
     def Graph2():
             # creating an instance of our class
-            
-            sc2 = SckanCompare(species=input.sp2())
+            sc2 = SckanCompare()
+
             # to execute a SPARQL query
-            #result2 = sc2.execute_query(query.neuron_path_query)
-            result_df2 = sc2.get_neuron_dataframe(result, species_name=input.sp2())
+            #result2 = sc2.execute_query(query.neuron_path_query, species=input.sp2())
+            result_df2 = sc2.get_filtered_dataframe(result, species=input.sp2())
             selected_Region_A = input.st2() 
             selected_Region_B = input.en2() 
-            simvis = SimpleVisualizer()
-            fig2 = simvis.plot_figure(result_df2, selected_Region_A, selected_Region_B)
+
+            fig2 = sc2.plot_dataframe_block_vis(result_df2, selected_Region_A, selected_Region_B) 
             #fig.show()
             #fig
             return fig2
@@ -268,22 +270,12 @@ def server(input, output, session):
     def map1():
             selected_region_A = input.mst1() 
             selected_region_B = input.men1() 
-            sc3 = SckanCompare(species=input.sp1())
+            sc3 = SckanCompare()
             # to execute a SPARQL query
-            #result3 = sc3.execute_query(query.neuron_path_query)
-            result_df3 = sc3.get_neuron_dataframe(result, species_name=input.sp1())
-            sc3.reset_vis()
-            req_df = result_df3[(result_df3.Region_A == selected_region_A) & (result_df3.Region_B == selected_region_B)]
-            sc3.reset_vis()
-            for i in range(len(req_df)):
-                sc3.add_connection(
-                    region_A=req_df.iloc[i, 3],
-                    region_B=req_df.iloc[i, 5],
-                    region_C=req_df.iloc[i, 7],
-                    neuron=req_df.iloc[i, 1]
-                )
-            fig3  = sc3.get_graph()
-            
+            #result3 = sc3.execute_query(query.neuron_path_query, species=input.sp1())
+            result_df3 = sc3.get_filtered_dataframe(result, species=input.sp1())
+            req_df3 = result_df3[(result_df3.Region_A == selected_region_A) & (result_df3.Region_B == selected_region_B)]
+            fig3 = sc3.plot_dataframe_anatomy_vis(req_df3, species=input.sp1())
             return fig3
     
     @output
@@ -291,23 +283,12 @@ def server(input, output, session):
     def map2():
             selected_region_A = input.mst2() 
             selected_region_B = input.men2() 
-            sc4 = SckanCompare(species=input.sp2())
+            sc4 = SckanCompare()
             # to execute a SPARQL query
-            #result2 = sc2.execute_query(query.neuron_path_query)
-            result_df4 = sc4.get_neuron_dataframe(result, species_name=input.sp2())
-            sc4.reset_vis()
+            #result2 = sc2.execute_query(query.neuron_path_query, species=input.sp2())
+            result_df4 = sc4.get_filtered_dataframe(result, species=input.sp2())
             req_df4 = result_df4[(result_df4.Region_A == selected_region_A) & (result_df4.Region_B == selected_region_B)]
-            sc4.reset_vis()
-            for i in range(len(req_df4)):
-                sc4.add_connection(
-                    region_A=req_df4.iloc[i, 3],
-                    region_B=req_df4.iloc[i, 5],
-                    region_C=req_df4.iloc[i, 7],
-                    neuron=req_df4.iloc[i, 1]
-                )
-            fig4  = sc4.get_graph()
-            
+            fig4 = sc4.plot_dataframe_anatomy_vis(req_df4, species=input.sp2())
             return fig4
-
 
 app = App(app_ui, server)
