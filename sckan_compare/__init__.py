@@ -294,7 +294,10 @@ class SckanCompare(object):
         df_result = self.replace_region_synonyms_dataframe(df_result, species)
 
         # filter dataframe based on filter_column and filter_value
-        df_result = utils.filter_dataframe(df_result, filter_column, filter_value)
+        if filter_column:
+            if not filter_value:
+                raise ValueError("filter_value not for specified column {}!".format(filter_column))
+            df_result = utils.filter_dataframe(df_result, filter_column, filter_value)
 
         # remove duplicate rows based on all columns  
         df_result = df_result.drop_duplicates()
@@ -320,8 +323,8 @@ class SckanCompare(object):
 
         Returns
         -------
-        AntomyVis
-            The visualization object.
+        go.FigureWidget
+            The Plotly figure widget.
         """
         # create AntomyVis object
         vis = AntomyVis(species)
@@ -329,7 +332,7 @@ class SckanCompare(object):
         # plot all connections in dataframe
         vis.plot_dataframe(df)
 
-        return vis
+        return vis.fig
     
     def plot_dataframe_block_vis(self, df, region_A=None, region_B=None):
         """
@@ -348,8 +351,8 @@ class SckanCompare(object):
 
         Returns
         -------
-        AntomyVis
-            The visualization object.
+        go.FigureWidget
+            The Plotly figure widget.
         """
         # create AntomyVis object
         vis = BlockVis()
@@ -357,4 +360,4 @@ class SckanCompare(object):
         # plot all connections in dataframe
         vis.plot_figure(df, region_A, region_B)
 
-        return vis
+        return vis.fig
