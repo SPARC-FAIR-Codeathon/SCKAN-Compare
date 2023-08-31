@@ -6,12 +6,12 @@ from setuptools import setup, find_packages
 
 setup(
     name="sckan-compare",
-    version="0.0.7",
-    description="A package for retrieving and visualizing data contained in     SCKAN (e.g., across species, relationship to spinal segments) to highlight similarities and differences in neuronal pathways",
-    author="Shailesh Appukuttan, Hiba Ben Aribi, Pranjal Garg, Gautam Kumar",
+    version="0.1.0",
+    description="A package for retrieving and visualizing data contained in SCKAN (e.g., across species, relationship to spinal segments) to highlight similarities and differences in neuronal pathways",
+    author="Shailesh Appukuttan, Pranjal Garg, Hiba Ben Aribi, Gautam Kumar",
     author_email="appukuttan.shailesh@gmail.com",
     license="Apache-2.0",
     package_data={'': ['data/*.*']},
     packages=find_packages(),
-    install_requires=["dash", "dash-cytoscape", "numpy", "pandas", "plotly"],
+    install_requires=["numpy", "pandas", "plotly", "diskcache", "Pillow", "requests"],
 )
