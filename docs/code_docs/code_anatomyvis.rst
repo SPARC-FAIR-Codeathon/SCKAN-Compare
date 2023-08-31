@@ -1,5 +1,5 @@
-Visualizer Class
-================
+AntomyVis Class
+===============
 
 .. automodule:: sckan_compare.anatomyvis.AntomyVis
     :members:

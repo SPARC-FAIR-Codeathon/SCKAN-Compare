@@ -1,5 +1,5 @@
-SimpleVisualizer Class
-======================
+BlockVis Class
+==============
 
 .. automodule:: sckan_compare.blockvis.BlockVis
     :members:
